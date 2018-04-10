@@ -82,8 +82,8 @@ def key_callback(window, key, scancode, action, mods):
       elif key==glfw.KEY_W:
          gCamHeight += -.1
 
-def windows_callback(window, width, hegiht):
-   glViewPort(0, 0, width, height)
+def windows_callback(window, width, height):
+   glViewport(0, 0, width, height)
 
 def main():
    if not glfw.init():
@@ -94,7 +94,7 @@ def main():
       return
    glfw.make_context_current(window)
    glfw.set_key_callback(window, key_callback)
-   glutReshapeFunc(windows_callback)
+   glfw.set_framebuffer_size_callback(window, windows_callback)
 
    while not glfw.window_should_close(window):
       glfw.poll_events()
