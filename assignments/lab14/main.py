@@ -5,65 +5,44 @@ from OpenGL.GLUT import *
 import numpy as np
 gCamAng = 0.
 gCamHeight = 1.
-glVertexArraySeparate = None
+glVertexArray = None
+glIndexArray = None
 
 def createUnitCube_glDrawArrays():
-   return np.array([
-      [.5, .5, -.5],
-      [-.5, .5, -.5],
-      [-.5, .5, .5],
-
-      [.5, .5, -.5],
-      [-.5, .5, .5],
-      [.5, .5, .5],
-
-      [.5, -.5, .5],
-      [-.5, -.5, .5],
-      [-.5, -.5, -.5],
-
-      [.5, -.5, .5],
-      [-.5, -.5, -.5],
-      [.5, -.5, -.5],
-
-      [.5, .5, .5],
-      [-.5, .5, .5],
-      [-.5, -.5, .5],
-
-      [.5, .5, .5],
-      [-.5, -.5, .5],
-      [.5, -.5, .5],
-
-      [.5, -.5, -.5],
-      [-.5, -.5, -.5],
-      [-.5, .5, -.5],
-
-      [.5, -.5, -.5],
-      [-.5, .5, -.5],
-      [.5, .5, -.5],
-
-      [-.5, .5, .5],
-      [-.5, .5, -.5],
-      [-.5, -.5, -.5],
-
-      [-.5, .5, .5],
-      [-.5, -.5, -.5],
-      [-.5, -.5, .5],
-
-      [.5, .5, -.5],
-      [.5, .5, .5],
-      [.5, -.5, .5],
-
-      [.5, .5, -.5],
-      [.5, -.5, .5],
-      [.5, -.5, -.5],
+   varr = np.array([
+      [ 0.5, 0.5,-0.5],
+      [-0.5, 0.5,-0.5],
+      [-0.5, 0.5, 0.5],
+      [ 0.5, 0.5, 0.5],
+      [ 0.5,-0.5, 0.5],
+      [-0.5,-0.5, 0.5],
+      [-0.5,-0.5,-0.5],
+      [ 0.5,-0.5,-0.5],
    ], 'float32')
+   iarr = np.array([
+      [0,1,2],
+      [0,2,3],
+      [4,5,6],
+      [4,6,7],
+      [3,2,5],
+      [3,5,4],
+      [7,6,1],
+      [7,1,0],
+      [2,1,6],
+      [2,6,5],
+      [0,3,4],
+      [0,4,7],
+   ])
+   return varr, iarr
 
 def drawUnitCube_glDrawArrays():
-   global glVertexArraySeparate
-   varr = glVertexArraySeparate
+   global glVertexArray, glIndexArray
+   varr = glVertexArray
+   iarr = glIndexArray
    glEnableClientState(GL_VERTEX_ARRAY)
    glVertexPointer(3, GL_FLOAT, 3*varr.itemsize, varr)
-   glDrawArrays(GL_TRIANGLES, 0, int(varr.size/3))
+   # glDrawArrays(GL_TRIANGLES, 0, int(varr.size/3))
+   glDrawElements(GL_TRIANGLES, iarr.size, GL_UNSIGNED_INT, iarr)
 
 def drawFrame():
    glBegin(GL_LINES)
@@ -108,7 +87,7 @@ def windows_callback(window, width, height):
    glViewport(0, 0, width, height)
 
 def main():
-   global glVertexArraySeparate
+   global glVertexArray, glIndexArray
    if not glfw.init():
       return
    window = glfw.create_window(640,640,'2015004584', None,None)
@@ -119,7 +98,7 @@ def main():
    glfw.set_key_callback(window, key_callback)
    glfw.set_framebuffer_size_callback(window, windows_callback)
 
-   glVertexArraySeparate = createUnitCube_glDrawArrays()
+   glVertexArray, glIndexArray = createUnitCube_glDrawArrays()
    while not glfw.window_should_close(window):
       glfw.poll_events()
       render()
