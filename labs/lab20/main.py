@@ -179,7 +179,11 @@ def drawUnitCube_glDrawElements():
 def getRotMatFrom(axis, ang):
    a = normalized(axis)
    p = normalized(np.cross(a, (0,0,1)))
-   return np.column_stack(([0, 0, 1], p, np.cross(p, [0, 0, 1]))) @ np.linalg.inv(np.column_stack((a, p, np.cross(p, a))))
+   Raz = np.column_stack(([0, 0, 1], p, np.cross(p, [0, 0, 1]))) @ np.linalg.inv(np.column_stack((a, p, np.cross(p, a))))
+   Rz = np.array([[np.cos(np.radians(ang)), -np.sin(np.radians(ang)), 0],
+                  [np.sin(np.radians(ang)), np.cos(np.radians(ang)), 0],
+                  [0,0,1]])
+   return np.linalg.inv(Raz) @ Rz @ Raz
 
 def render(ang):
     global gCamAng, gCamHeight
