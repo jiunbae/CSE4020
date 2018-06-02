@@ -1,2 +1,5 @@
 test/
 test.py
+
+.ipynb_checkpoints
+.cache/
