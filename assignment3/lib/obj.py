@@ -1,20 +1,22 @@
+import ctypes
 from os import path
-from collections import OrderedDict
 from itertools import chain
 
 import numpy as np
+from numpy import apply_along_axis as npa
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
 class OBJ:
     _buffer = type('buffer', (), {
-        'vertex'    : np.empty((0, 3)),
-        'normal'    : np.empty((0, 3)),
-        'texcoord'  : np.empty((0, 3)),
+        'vertex'    : np.empty((0, 3), dtype=np.float32),
+        'normal'    : np.empty((0, 3), dtype=np.float32),
+        'texcoord'  : np.empty((0, 2), dtype=np.float32),
     })
 
     def __init__(self, filename=''):
         self.filename   = filename
+        self.array      = None
         self.index      = None
         self.indexes    = dict()
         self.faces      = list()
@@ -29,25 +31,71 @@ class OBJ:
                '\tNumber of faces with 4 vertices: {}\n'.format(0) +\
                '\tNumber of faces with more than 4 vertices: {}\n'.format(0)
 
-    def render(self):
-        glBegin(GL_POLYGON)
-        for v, n, t in zip(self.buffer.vertex, self.buffer.normal, self.buffer.texcoord):
-            if self.values.normal.size:
-                glNormal3fv(n)
-            if self.values.texcoord.size :
-                glTexCoord2fv(t)
-            glVertex3fv(v)
-        glEnd()
+    def render(self) -> None:
+        glEnableClientState(GL_VERTEX_ARRAY)
+        glEnableClientState(GL_NORMAL_ARRAY)
+
+        size = self.array.itemsize
+        glNormalPointer(GL_FLOAT, 6*size, self.array)
+        glVertexPointer(3, GL_FLOAT, 6*size, ctypes.c_void_p(self.array.ctypes.data+3*size))
+        glDrawArrays(GL_TRIANGLES, 0, int(self.array.size / 6))
+
+        glDisableClientState(GL_VERTEX_ARRAY)
+        glDisableClientState(GL_NORMAL_ARRAY)
 
     @staticmethod
-    def read_obj(filename):
+    def trianglize(polygon: np.ndarray) -> np.ndarray:
+        count = np.size(polygon, 0)
+        triangles = list()
+
+        if sum(np.prod(polygon[(i+1)%count]-p) for i, p in enumerate(polygon)) > 0:
+            polygon = polygon[::-1]
+
+        _sum = lambda p, q, r: p[0]*(r[1]-q[1]) + q[0]*(p[1]-r[1]) + r[0]*(q[1]-p[1])
+        _area = lambda p, q, r: np.abs(_sum(p, q, r) / 2.)
+        _inside = lambda v, p, q, r: _area(p, q, r) == sum(_area(p,q,r) for p,q,r in [(v, q, r), (v, p, r), (v, p, q)])
+        _ear = lambda p, q, r, polygon: _contain(p,q,r,polygon) and _sum(p, q, r)<0 and _area(p,q,r)
+
+        def _contain(p, q, r, polygon):
+            for poly in polygon:
+                if tuple(poly) in map(tuple, (p, q, r)): continue
+                elif _inside(poly, p, q, r): return False
+            return True
+
+        vertex = [tuple(point) for i, point in enumerate(polygon) \
+                    if _ear(polygon[i-1], point, polygon[(i+1)%count], polygon)]
+
+        while vertex and count >= 3:
+            ear = vertex.pop(0)
+            i = np.where(polygon == ear)[0][1]
+            pi = i-1
+            ni = i+1
+            prev = polygon[pi]
+            next = polygon[ni%count]
+            polygon = np.delete(polygon, i, axis=0)
+            count -= 1
+            triangles.append((prev, ear, next))
+            if count > 3:
+                pp = polygon[pi-1]
+                nn = polygon[(ni+1)%count]
+
+                for p, q, r in [(pp, prev, next), (prev, next, nn)]:
+                    point = tuple(q)
+                    if _ear(p, q, r, polygon):
+                        if point not in vertex:
+                            vertex.append(point)
+                    elif point in vertex:
+                        vertex.remove(p)
+        return np.array(triangles)
+
+    @staticmethod
+    def read_obj(filename: str) -> object:
         obj = OBJ(path.basename(filename))
 
         def _type(v):
             try: return int(v or 0)
             except ValueError:
                 return float(v)
-
         def _update(tar, val):
             setattr(obj.values, tar, np.append(getattr(obj.values, tar), [val], axis=0))
 
@@ -59,9 +107,8 @@ class OBJ:
         }.get(t,  lambda v: None)(v)
 
         with open(filename) as file:
-            any(parse(*line) for line in map(str.split, file))
+            any(parse(*line) for line in filter(None, map(str.split, file)))
 
-        # obj.indexes = {f: i for i, f in enumerate(set(chain(*obj.faces)))}
         count = 0
         for index in chain(*obj.faces):
             if index not in obj.indexes:
@@ -69,14 +116,15 @@ class OBJ:
                 count +=1 
 
         obj.faces = np.asarray(obj.faces)
-        obj.buffer.vertex   = np.empty((len(obj.indexes), 3), np.float32)
-        obj.buffer.normal   = np.empty((len(obj.indexes), 3), np.float32)
-        obj.buffer.texcoord = np.empty((len(obj.indexes), 2), np.float32)
+        obj.buffer.vertex   = npa(obj.values.vertex.__getitem__, 0, obj.faces[:, :, 0].flatten()-1)
+        obj.buffer.normal   = npa(obj.values.normal.__getitem__, 0, obj.faces[:, 0, 2]-1)
+        # obj.buffer.texcoord = npa(obj.values.texcoord.__getitem__, 0, obj.faces[:, 0, 0]-1)
 
-        for index, value in obj.indexes.items():
-            obj.buffer.vertex[value]   = obj.values.vertex[index[0]-1]   if obj.values.vertex.size else 0
-            obj.buffer.normal[value]   = obj.values.normal[index[2]-1]   if obj.values.normal.size else 0
-            obj.buffer.texcoord[value] = obj.values.texcoord[index[1]-1] if obj.values.texcoord.size else 0
-        obj.index = np.apply_along_axis(lambda x: obj.indexes[tuple(x)], 2, obj.faces)
+        obj.index = npa(lambda x: obj.indexes[tuple(x)], 2, obj.faces)
+
+        w, h = obj.buffer.vertex.shape
+        arange = np.arange(w).reshape(w, 1)
+        ovn = npa(lambda x: np.stack((x,x,x)), 1, obj.buffer.normal).reshape(w, h)
+        obj.array = npa(lambda x: np.stack((ovn[x], obj.buffer.vertex[x])), 1, arange).reshape(w*2, h).astype(np.float32)
 
         return obj
