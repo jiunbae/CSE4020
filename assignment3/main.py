@@ -9,109 +9,37 @@ from lib.mode import Mode
 from lib.obj import OBJ
 
 class HOS(Window):
-    angle = type('angle', (), {
+    camera = type('camera', (), {
         'angle': 0,
         'height': 0,
+        'zoom': 1,
     })
 
     def __init__(self, width, height, name):
         super().__init__(width, height, name)
-        self.cam = HOS.angle()
+        self.cam = HOS.camera()
         # objects, In this case, only one object willl be rendered
         self.objects = list()
         # enable lights, see also lib.light
         self.lights = [Light({
-                'pos':      (1., 0., 0., 0.),
-                'ambient':  (.1, 0., 0., 1.),
-                'diffuse':  (1., 0., 0., 1.),
-                'specular': (1., 0., 0., 1.),
-            }), Light({
-                'pos':      (0., 0., 1., 0.),
-                'ambient':  (0., 0., .1, 1.),
-                'diffuse':  (0., 0., 1., 1.),
-                'specular': (0., 0., 1., 1.),
-            }), Light({
-                'pos':      (0., 1., 0., 0.),
-                'ambient':  (0., .1, 0., 1.),
-                'diffuse':  (0., 1., 0., 1.),
-                'specular': (0., 1., 0., 1.),
-            })
-        ]
-
+            'pos':      (1., 0., 0., 0.),
+            'ambient':  (.1, 0., 0., 1.),
+            'diffuse':  (1., 0., 0., 1.),
+            'specular': (1., 0., 0., 1.),
+        }), Light({
+            'pos':      (0., 1., 0., 0.),
+            'ambient':  (0., .1, 0., 1.),
+            'diffuse':  (0., 1., 0., 1.),
+            'specular': (0., 1., 0., 1.),
+        }), Light({
+            'pos':      (0., 0., 1., 0.),
+            'ambient':  (0., 0., .1, 1.),
+            'diffuse':  (0., 0., 1., 1.),
+            'specular': (0., 0., 1., 1.),
+        })]
         self.polygonMode = Mode([GL_LINE, GL_FILL])
 
-    def frame(self):
-        glBegin(GL_LINES)
-        glColor3ub(255,0,0)
-        glVertex3fv(np.array([0.,0.,0.]))
-        glVertex3fv(np.array([1.,0.,0.]))
-        glColor3ub(0,255,0)
-        glVertex3fv(np.array([0.,0.,0.]))
-        glVertex3fv(np.array([0.,1.,0.]))
-        glColor3ub(0,0,255)
-        glVertex3fv(np.array([0.,0.,0]))
-        glVertex3fv(np.array([0.,0.,1.]))
-        glEnd()
-
     def render(self):
-        def cube():
-            glBegin(GL_TRIANGLES)
-
-            glNormal3f(0,1,0)
-            glVertex3f(0.5,0.5,-0.5)
-            glVertex3f(-0.5,0.5,-0.5)
-            glVertex3f(-0.5,0.5,0.5)
-
-            glVertex3f(0.5,0.5,-0.5)
-            glVertex3f(-0.5,0.5,0.5)
-            glVertex3f(0.5,0.5,0.5)
-
-            glNormal3f(0,-1,0)
-            glVertex3f(0.5,-0.5,0.5)
-            glVertex3f(-0.5,-0.5,0.5)
-            glVertex3f(-0.5,-0.5,-0.5)
-
-            glVertex3f(0.5,-0.5,0.5)
-            glVertex3f(-0.5,-0.5,-0.5)
-            glVertex3f(0.5,-0.5,-0.5)
-
-            glNormal3f(0,0,1)
-            glVertex3f(0.5,0.5,0.5)
-            glVertex3f(-0.5,0.5,0.5)
-            glVertex3f(-0.5,-0.5,0.5)
-
-            glVertex3f(0.5,0.5,0.5)
-            glVertex3f(-0.5,-0.5,0.5)
-            glVertex3f(0.5,-0.5,0.5)
-
-            glNormal3f(0,0,-1)
-            glVertex3f(0.5,-0.5,-0.5)
-            glVertex3f(-0.5,-0.5,-0.5)
-            glVertex3f(-0.5,0.5,-0.5)
-
-            glVertex3f(0.5,-0.5,-0.5)
-            glVertex3f(-0.5,0.5,-0.5)
-            glVertex3f(0.5,0.5,-0.5)
-
-            glNormal3f(-1,0,0)
-            glVertex3f(-0.5,0.5,0.5)
-            glVertex3f(-0.5,0.5,-0.5)
-            glVertex3f(-0.5,-0.5,-0.5)
-
-            glVertex3f(-0.5,0.5,0.5)
-            glVertex3f(-0.5,-0.5,-0.5)
-            glVertex3f(-0.5,-0.5,0.5)
-
-            glNormal3f(1,0,0)
-            glVertex3f(0.5,0.5,-0.5)
-            glVertex3f(0.5,0.5,0.5)
-            glVertex3f(0.5,-0.5,0.5)
-
-            glVertex3f(0.5,0.5,-0.5)
-            glVertex3f(0.5,-0.5,0.5)
-            glVertex3f(0.5,-0.5,-0.5)
-            glEnd()
-
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
         glEnable(GL_DEPTH_TEST)
         glMatrixMode(GL_PROJECTION) 
@@ -120,16 +48,19 @@ class HOS(Window):
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 
+        # camera angle
         gluLookAt(5 * np.sin(self.cam.angle),
                   self.cam.height,
                   5 * np.cos(self.cam.angle), 0, 0, 0, 0, 1, 0)
-      
         self.frame()
 
+        # render multiple lights
         Light.render()
 
         glPushMatrix()
-        # cube()
+        # camera zoom
+        glScalef(self.cam.zoom, self.cam.zoom, self.cam.zoom)
+        # render objects
         for obj in self.objects:
             obj.render()
 
@@ -152,9 +83,9 @@ class HOS(Window):
             elif key == glfw.KEY_W:
                 self.cam.height += -.1
             elif key == glfw.KEY_A:
-                pass # TODO: Zoom in
+                self.cam.zoom += .1
             elif key == glfw.KEY_S:
-                pass # TODO: Zoom out
+                self.cam.zoom -= .1
             elif key == glfw.KEY_Z:
                 glPolygonMode(GL_FRONT_AND_BACK, self.polygonMode.get(next=True))
 
@@ -167,8 +98,8 @@ class HOS(Window):
         print (obj)
         self.append(obj)
 
-
 def main():
+
     if not glfw.init(): return
     window = HOS(640, 640, '2015004584')
     if not window.context:
