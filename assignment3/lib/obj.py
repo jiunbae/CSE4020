@@ -11,7 +11,7 @@ class OBJ:
     _buffer = type('buffer', (), {
         'vertex'    : np.empty((0, 3), dtype=np.float32),
         'normal'    : np.empty((0, 3), dtype=np.float32),
-        'texcoord'  : np.empty((0, 2), dtype=np.float32),
+        'texcoord'  : np.empty((0, 3), dtype=np.float32),
     })
 
     def __init__(self, filename=''):
@@ -92,8 +92,12 @@ class OBJ:
             try: return int(v or 0)
             except ValueError:
                 return float(v)
+
         def _update(tar, val):
+            if len(val) != np.size(getattr(obj.values, tar), 1):
+                setattr(obj.values, tar, np.empty((0, len(val)), dtype=np.float32))
             setattr(obj.values, tar, np.append(getattr(obj.values, tar), [val], axis=0))
+
         def _match(tar, ary):
             return np.where(npa(lambda x: np.allclose(x, tar), 1, ary) == True)[0][0]
 
@@ -105,6 +109,11 @@ class OBJ:
         }.get(t,  lambda v: None)(v)
 
         with open(filename) as file:
+            # for line in filter(None, map(str.split, file)):
+            #     if line[0] == 'vt':
+            #         print (line)
+            #     parse(*line)
+
             any(parse(*line) for line in filter(None, map(str.split, file)))
 
         newface = list()
@@ -118,8 +127,8 @@ class OBJ:
                 for triangle in OBJ.trianglize(plane):
                     points = list()
                     for point in triangle:
-                        point = np.hstack([point[:index], 
-                                           mapping[:,index][_match(point, plane)], 
+                        point = np.hstack([point[:index],
+                                           mapping[:,index][_match(point, plane)],
                                            point[index:]])
                         try:
                             vi = _match(point, obj.values.vertex)
