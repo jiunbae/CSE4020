@@ -22,6 +22,7 @@ class OBJ:
         self.faces      = list()
         self.values     = OBJ._buffer()
         self.buffer     = OBJ._buffer()
+        self.face_info  = [0] * 3
 
     def __str__(self):
         return 'Object Information\n' +\
@@ -48,8 +49,8 @@ class OBJ:
         count = np.size(polygon, 0)
         triangles = list()
 
-        if sum(np.prod(polygon[(i+1)%count]-p) for i, p in enumerate(polygon)) > 0:
-            polygon = polygon[::-1]
+        if sum((polygon[(i + 1)%count][0]-p[0])*(polygon[(i+1)%count][1]+p[1]) for i, p in enumerate(polygon)) > 0:
+            polygon = np.flip(polygon, 0)
 
         _sum = lambda p, q, r: p[0]*(r[1]-q[1]) + q[0]*(p[1]-r[1]) + r[0]*(q[1]-p[1])
         _area = lambda p, q, r: np.abs(_sum(p, q, r) / 2.)
@@ -68,18 +69,13 @@ class OBJ:
         while vertex and count >= 3:
             ear = vertex.pop(0)
             i = np.where(polygon == ear)[0][1]
-            pi = i-1
-            ni = i+1
-            prev = polygon[pi]
-            next = polygon[ni%count]
+            prev = polygon[i-1]
+            next = polygon[(i+1)%count]
             polygon = np.delete(polygon, i, axis=0)
             count -= 1
             triangles.append((prev, ear, next))
             if count > 3:
-                pp = polygon[pi-1]
-                nn = polygon[(ni+1)%count]
-
-                for p, q, r in [(pp, prev, next), (prev, next, nn)]:
+                for p, q, r in [(polygon[i-2],prev,next),(prev,next,polygon[(i+2)%count])]:
                     point = tuple(q)
                     if _ear(p, q, r, polygon):
                         if point not in vertex:
@@ -98,6 +94,8 @@ class OBJ:
                 return float(v)
         def _update(tar, val):
             setattr(obj.values, tar, np.append(getattr(obj.values, tar), [val], axis=0))
+        def _match(tar, ary):
+            return np.where(npa(lambda x: np.allclose(x, tar), 1, ary) == True)[0][0]
 
         parse = lambda t, *v: {
             'v' : lambda v: _update('vertex', tuple(map(_type, v))),
@@ -109,18 +107,35 @@ class OBJ:
         with open(filename) as file:
             any(parse(*line) for line in filter(None, map(str.split, file)))
 
-        count = 0
-        for index in chain(*obj.faces):
-            if index not in obj.indexes:
-                obj.indexes[index] = count
-                count +=1 
+        newface = list()
+        for i, face in enumerate(obj.faces):
+            if len(face) > 3:
+                normal = face[-1][-1]
+                mapping = npa(lambda x: obj.values.vertex[x-1], 1, np.array([face])[:,:,0].T).squeeze()
+                f = np.vectorize(lambda x: not np.any(mapping[:,x]-mapping[:,x][0]))
+                index = (np.where(f(np.arange(3)) == True)[0] or [0])[0]
+                plane = np.delete(mapping, index, 1)
+                for triangle in OBJ.trianglize(plane):
+                    points = list()
+                    for point in triangle:
+                        point = np.hstack([point[:index], 
+                                           mapping[:,index][_match(point, plane)], 
+                                           point[index:]])
+                        try:
+                            vi = _match(point, obj.values.vertex)
+                        except IndexError:
+                            obj.values.vertex = np.vstack([obj.values.vertex, point])
+                            vi = np.size(obj.values.vertex, 0)
+                        finally:
+                            points.append(vi+1)
+                    newface.append([(p, 0, normal) for p in points])
+            else:
+                newface.append(face)
 
-        obj.faces = np.asarray(obj.faces)
-        obj.buffer.vertex   = npa(obj.values.vertex.__getitem__, 0, obj.faces[:, :, 0].flatten()-1)
-        obj.buffer.normal   = npa(obj.values.normal.__getitem__, 0, obj.faces[:, 0, 2]-1)
-        # obj.buffer.texcoord = npa(obj.values.texcoord.__getitem__, 0, obj.faces[:, 0, 0]-1)
-
-        obj.index = npa(lambda x: obj.indexes[tuple(x)], 2, obj.faces)
+        obj.faces = np.asarray(newface)
+        obj.buffer.vertex   = npa(obj.values.vertex.__getitem__, 0, obj.faces[:, :, 0].flatten()-1) if obj.values.vertex.size else None
+        obj.buffer.normal   = npa(obj.values.normal.__getitem__, 0, obj.faces[:, 0, 2]-1) if obj.values.normal.size else None
+        obj.buffer.texcoord = npa(obj.values.texcoord.__getitem__, 0, obj.faces[:, 0, 0]-1) if obj.values.texcoord.size else None
 
         w, h = obj.buffer.vertex.shape
         arange = np.arange(w).reshape(w, 1)
