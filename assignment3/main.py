@@ -22,20 +22,25 @@ class HOS(Window):
         self.objects = list()
         # enable lights, see also lib.light
         self.lights = [Light({
-            'pos':      (1., 0., 0., 0.),
-            'ambient':  (.1, 0., 0., 1.),
-            'diffuse':  (1., 0., 0., 1.),
-            'specular': (1., 0., 0., 1.),
+            'pos':      ( 1., 0., 0., 0.),
+            'ambient':  ( .1, 0., 0., 1.),
+            'diffuse':  ( 1., 0., 0., 1.),
+            'specular': ( 1., 0., 0., 1.),
         }), Light({
-            'pos':      (0., 1., 0., 0.),
-            'ambient':  (0., .1, 0., 1.),
-            'diffuse':  (0., 1., 0., 1.),
-            'specular': (0., 1., 0., 1.),
+            'pos':      ( 0., 1., 0., 0.),
+            'ambient':  ( 0., .1, 0., 1.),
+            'diffuse':  ( 0., 1., 0., 1.),
+            'specular': ( 0., 1., 0., 1.),
         }), Light({
-            'pos':      (0., 0., 1., 0.),
-            'ambient':  (0., 0., .1, 1.),
-            'diffuse':  (0., 0., 1., 1.),
-            'specular': (0., 0., 1., 1.),
+            'pos':      ( 0., 0., 1., 0.),
+            'ambient':  ( 0., 0., .1, 1.),
+            'diffuse':  ( 0., 0., 1., 1.),
+            'specular': ( 0., 0., 1., 1.),
+        }), Light({
+            'pos':      (-1.,-1.,-1., 0.),
+            'ambient':  ( .1, 0., .1, 1.),
+            'diffuse':  ( 1., 0., 1., 1.),
+            'specular': ( 1., 0., 1., 1.),
         })]
         self.polygonMode = Mode([GL_LINE, GL_FILL])
 
