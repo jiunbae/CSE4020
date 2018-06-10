@@ -90,10 +90,10 @@ class HOS(Window):
                 glPolygonMode(GL_FRONT_AND_BACK, self.polygonMode.get(next=True))
 
     def _callback_drop(self, window, paths):
-        path = paths[0]
+        print ('Loading file, please wait a seconds')
         if len(paths) > 1:
             print ('Only one obj file can be attached at a time')
-        obj = OBJ.read_obj(path)
+        obj = OBJ.read_obj(paths[0])
         # print object information to stdout
         print (obj)
         self.append(obj)
