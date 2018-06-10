@@ -28,9 +28,9 @@ class OBJ:
         return 'Object Information\n' +\
                ('from file: {}\n'.format(self.filename) if self.filename else '') +\
                '\tTotal number of faces: {}\n'.format(len(self.faces)) +\
-               '\tNumber of faces with 3 vertices: {}\n'.format(0) +\
-               '\tNumber of faces with 4 vertices: {}\n'.format(0) +\
-               '\tNumber of faces with more than 4 vertices: {}\n'.format(0)
+               '\tNumber of faces with 3 vertices: {}\n'.format(self.face_info[0]) +\
+               '\tNumber of faces with 4 vertices: {}\n'.format(self.face_info[1]) +\
+               '\tNumber of faces with more than 4 vertices: {}\n'.format(self.face_info[2])
 
     def render(self) -> None:
         glEnableClientState(GL_VERTEX_ARRAY)
@@ -109,12 +109,11 @@ class OBJ:
         }.get(t,  lambda v: None)(v)
 
         with open(filename) as file:
-            # for line in filter(None, map(str.split, file)):
-            #     if line[0] == 'vt':
-            #         print (line)
-            #     parse(*line)
-
             any(parse(*line) for line in filter(None, map(str.split, file)))
+
+        obj.face_info[0] = len(list(filter(lambda x: len(x) == 3, obj.faces)))
+        obj.face_info[1] = len(list(filter(lambda x: len(x) == 4, obj.faces)))
+        obj.face_info[2] = len(list(filter(lambda x: len(x) > 4, obj.faces)))
 
         newface = list()
         for i, face in enumerate(obj.faces):
