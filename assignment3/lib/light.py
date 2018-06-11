@@ -26,7 +26,7 @@ class Light:
                 (1., 1., 1., 1.))
 
     def __init__(self, args):
-        self.index = Light.index.get(next=True)
+        self.index = Light.index.get(next=True, block=True)
         self.pos = args['pos']
         self.light = Light.COLOR(args['ambient'],
                                  args['diffuse'],
