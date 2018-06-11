@@ -7,15 +7,15 @@ There are report on `docs/`
 ## Requirements
 
 - [x] Manipulate the camera
-    - [x] Rotation
-    - [x] Zoom
+      - [x] Rotation
+      - [x] Zoom
 - [x] Load obj file and render
-    - [x] Drag and drop to load obj file
-    - [x] Display mesh only using vertex position, normals and faces
-    - [x] Toogle wireframe / solid mode by pressing Z key
-    - [x] Print informations when open a new `.obj` file
+      - [x] Drag and drop to load obj file
+      - [x] Display mesh only using vertex position, normals and faces
+      - [x] Toogle wireframe / solid mode by pressing Z key
+      - [x] Print informations when open a new `.obj` file
 - [x] Lighting
-    - [x] Use multiple light sources
+      - [x] Use multiple light sources
 
 Additional Implements
 
