@@ -127,9 +127,9 @@ class OBJ:
                 # 2-d vertex array without a plane
                 p = np.delete(m, (np.where(f(np.arange(3)) == True)[0] or [0])[0], 1)
 
-                newface.extend([[[ary[p] for ary in face.T]                # new face values
-                                    for p in map(partial(g, a=p), tri)]  # each triangle (convert vertex to id)
-                                        for tri in OBJ.trianglize(p)])     # trianglize given polygon
+                newface.extend([[[ary[p] for ary in face.T]             # new face values
+                                    for p in map(partial(g, a=p), tri)] # each triangle (convert vertex to id)
+                                        for tri in OBJ.trianglize(p)])  # trianglize given polygon
             else:
                 newface.append(face)
 
