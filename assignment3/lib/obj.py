@@ -1,6 +1,7 @@
 import ctypes
 from os import path
 from itertools import chain
+from functools import partial
 
 import numpy as np
 from numpy import apply_along_axis as npa
@@ -98,9 +99,6 @@ class OBJ:
                 setattr(obj.values, tar, np.empty((0, len(val)), dtype=np.float32))
             setattr(obj.values, tar, np.append(getattr(obj.values, tar), [val], axis=0))
 
-        def _match(tar, ary):
-            return np.where(npa(lambda x: np.allclose(x, tar), 1, ary) == True)[0][0]
-
         parse = lambda t, *v: {
             'v' : lambda v: _update('vertex', tuple(map(_type, v))),
             'vn': lambda v: _update('normal', tuple(map(_type, v))),
@@ -118,25 +116,20 @@ class OBJ:
         newface = list()
         for i, face in enumerate(obj.faces):
             if len(face) > 3:
-                normal = face[-1][-1]
-                mapping = npa(lambda x: obj.values.vertex[x-1], 1, np.array([face])[:,:,0].T).squeeze()
-                f = np.vectorize(lambda x: not np.any(mapping[:,x]-mapping[:,x][0]))
-                index = (np.where(f(np.arange(3)) == True)[0] or [0])[0]
-                plane = np.delete(mapping, index, 1)
-                for triangle in OBJ.trianglize(plane):
-                    points = list()
-                    for point in triangle:
-                        point = np.hstack([point[:index],
-                                           mapping[:,index][_match(point, plane)],
-                                           point[index:]])
-                        try:
-                            vi = _match(point, obj.values.vertex)
-                        except IndexError:
-                            obj.values.vertex = np.vstack([obj.values.vertex, point])
-                            vi = np.size(obj.values.vertex, 0)
-                        finally:
-                            points.append(vi+1)
-                    newface.append([(p, 0, normal) for p in points])
+                face = np.array(face)
+
+                # real vertex coord data from parsed vertex
+                m = npa(lambda x: obj.values.vertex[x-1], 1, np.array([face])[:,:,0].T).squeeze()
+                # vectorize function to detect plane
+                f = np.vectorize(lambda x: not np.any(m[:,x]-m[:,x][0]))
+                # vectorize function to detect index from vertex value
+                g = lambda t, a: np.where(npa(lambda x: np.allclose(x, t), 1, a) == True)[0][0]
+                # 2-d vertex array without a plane
+                p = np.delete(m, (np.where(f(np.arange(3)) == True)[0] or [0])[0], 1)
+
+                newface.extend([[[ary[p] for ary in face.T]                # new face values
+                                    for p in map(partial(g, a=p), tri)]  # each triangle (convert vertex to id)
+                                        for tri in OBJ.trianglize(p)])     # trianglize given polygon
             else:
                 newface.append(face)
 
