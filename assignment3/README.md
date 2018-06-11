@@ -2,6 +2,8 @@
 
 This is part of CSE4020 assignment#3 @ Hanyang Univ.
 
+There are report on `docs/`
+
 ## Requirements
 
 - [x] Manipulate the camera
