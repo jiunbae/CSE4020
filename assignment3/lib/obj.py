@@ -111,7 +111,7 @@ class OBJ:
 
         obj.face_info[0] = len(list(filter(lambda x: len(x) == 3, obj.faces)))
         obj.face_info[1] = len(list(filter(lambda x: len(x) == 4, obj.faces)))
-        obj.face_info[2] = len(list(filter(lambda x: len(x) > 4, obj.faces)))
+        obj.face_info[2] = len(list(filter(lambda x: len(x) >= 5, obj.faces)))
 
         newface = list()
         for i, face in enumerate(obj.faces):
