@@ -2,7 +2,7 @@
 """ tests.obj
     ---------------
     Test of OBJ
-    :author: MaybeS(maytryark@gmail.com)
+    :author: jiunbae(jiunbae.623@gmail.com)
 """
 
 import pytest

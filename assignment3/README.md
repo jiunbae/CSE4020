@@ -47,5 +47,5 @@ Drag and drop `.obj` file to look.
 
 ## Samples
 
-![mercy](https://github.com/MaybeS/CSE4020/blob/master/assignment3/images/mercy.png?raw=true)
-![tracer](https://github.com/MaybeS/CSE4020/blob/master/assignment3/images/tracer.png?raw=true)
+![mercy](https://github.com/jiunbae/CSE4020/blob/master/assignment3/images/mercy.png?raw=true)
+![tracer](https://github.com/jiunbae/CSE4020/blob/master/assignment3/images/tracer.png?raw=true)
