@@ -1,8 +1,15 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CSE4020 컴퓨터그래픽스</title>
+<meta name="description" content="CSE4020 컴퓨터그래픽스 코드 감사 보고서 — 근거 기반 평가와 등급">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
+
 :root{
   --ground:#F3F4F1; --surface:#FCFCFA; --surface-2:#EDEFEA;
   --ink:#1A211C; --ink-soft:#5F6862; --ink-faint:#8A938C;
@@ -146,8 +153,108 @@ footer p + p{margin-top:6px}
   .grade{transform:none}
   .masthead{padding-block:30px 18px}
 }
-</style>
 
+/* ---------- index-only components ---------- */
+.thesis{font-family:var(--f-display); font-size:clamp(19px,2.9vw,24px); line-height:1.45; max-width:34ch}
+.dist{display:flex; height:34px; border-radius:3px; overflow:hidden; border:1px solid var(--rule); margin-top:10px}
+.dist span{display:flex; align-items:center; justify-content:center; overflow:hidden; white-space:nowrap; font-family:var(--f-mono); font-size:11px; font-weight:600; color:var(--surface)}
+@media (max-width:560px){ .dist span{font-size:0} .dist{height:22px} }
+.dist .d-hi{background:var(--good)} .dist .d-mid{background:var(--warn)} .dist .d-lo{background:var(--mark)} .dist .d-na{background:var(--ink-faint)}
+.legend{display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:10px; font-size:13px; color:var(--ink-soft)}
+.legend i{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:baseline}
+.yr{font-family:var(--f-mono); font-size:11px; font-weight:600; letter-spacing:.16em; color:var(--ink-faint); text-transform:uppercase;
+    padding-top:22px; margin-top:8px; border-top:1px solid var(--rule)}
+.yr:first-of-type{border-top:0; padding-top:0}
+.row{display:grid; grid-template-columns:auto 1fr auto; gap:4px 16px; align-items:baseline;
+     padding:14px 0; border-bottom:1px solid var(--rule-soft)}
+.row:last-child{border-bottom:0}
+.row .rc{font-family:var(--f-mono); font-size:12px; font-weight:600; color:var(--accent); letter-spacing:.06em; white-space:nowrap}
+.row .rn{font-family:var(--f-display); font-size:18px; font-weight:600}
+.row .rg{font-family:var(--f-display); font-size:20px; font-weight:600; white-space:nowrap; justify-self:end}
+.row .rv{grid-column:2/4; color:var(--ink-soft); font-size:14.5px; max-width:68ch}
+.row a{text-decoration:none}
+.row a:hover .rn{text-decoration:underline}
+@media (max-width:560px){
+  .row{grid-template-columns:1fr auto}
+  .row .rc{grid-column:1/3}
+  .row .rv{grid-column:1/3}
+}
+.two{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-top:22px}
+.act{background:var(--surface); border:1px solid var(--rule); border-left:4px solid var(--mark); border-radius:3px; padding:16px 18px; box-shadow:var(--shadow)}
+.act h4{font-size:16px; margin-bottom:6px}
+.act p{font-size:14px; color:var(--ink-soft)}
+.act.ok{border-left-color:var(--good)}
+
+
+/* ---------- prompt disclosure ---------- */
+details.prompt{margin-top:22px; border:1px solid var(--rule); border-radius:3px; background:var(--surface)}
+details.prompt > summary{cursor:pointer; padding:11px 16px; font-family:var(--f-mono); font-size:11.5px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); list-style:none}
+details.prompt > summary::-webkit-details-marker{display:none}
+details.prompt > summary::before{content:"▸ "; color:var(--accent)}
+details.prompt[open] > summary::before{content:"▾ "}
+details.prompt > summary:hover{color:var(--accent)}
+.prompt-body{padding:0 16px 16px; border-top:1px solid var(--rule-soft)}
+.prompt-body p{font-size:13.5px; color:var(--ink-soft); margin:12px 0 0}
+.prompt-body pre{white-space:pre-wrap; word-break:break-word; font-size:12px; line-height:1.7}
+.sitenav .meth{margin-left:auto; color:var(--ink-soft); text-decoration:none}
+.sitenav .meth + .ext{margin-left:0}
+
+/* ---------- findings summary strip ---------- */
+.summary{display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; margin:-18px 0 0; padding:12px 0 0}
+.summary .lbl{margin-right:2px}
+.summary .chip{display:inline-flex; align-items:baseline; gap:5px; padding:3px 10px; border-radius:2px;
+  font-family:var(--f-mono); font-size:11px; letter-spacing:.06em; text-decoration:none; border:1px solid transparent}
+.summary .chip b{font-family:var(--f-display); font-size:15px; font-weight:600}
+.summary .s-critical{color:var(--mark); background:var(--mark-soft); border-color:var(--mark)}
+.summary .s-major{color:var(--warn); background:var(--warn-soft); border-color:var(--warn)}
+.summary .s-minor{color:var(--ink-soft); background:var(--surface-2); border-color:var(--rule)}
+.summary .chip:hover{filter:brightness(.96)}
+.summary .total{font-family:var(--f-mono); font-size:11px; color:var(--ink-faint); letter-spacing:.08em}
+.permalink{margin-left:auto; color:var(--ink-faint); text-decoration:none; font-family:var(--f-mono);
+  font-size:14px; opacity:0; transition:opacity .12s}
+.finding:hover .permalink, .permalink:focus{opacity:1}
+.finding:target{outline:2px solid var(--accent); outline-offset:4px}
+@media (prefers-reduced-motion:reduce){.permalink{transition:none}}
+/* ================= site chrome (Pages only) ================= */
+.sitenav{position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:14px;
+  padding:10px 20px; background:color-mix(in srgb, var(--ground) 88%, transparent);
+  backdrop-filter:saturate(150%) blur(8px); border-bottom:1px solid var(--rule);
+  font-family:var(--f-mono); font-size:12px}
+.sitenav .home{color:var(--accent); font-weight:600; text-decoration:none; letter-spacing:.04em}
+.sitenav .crumb{color:var(--ink-faint); letter-spacing:.14em}
+.sitenav .ext{margin-left:auto; color:var(--ink-soft); text-decoration:none}
+.sitenav a:hover{text-decoration:underline}
+.ev-head .src{color:inherit; text-decoration:none; border-bottom:1px dotted var(--ink-faint)}
+.ev-head .src:hover{color:var(--accent); border-bottom-color:var(--accent)}
+.ev-head .expand{margin-left:auto; font-family:var(--f-mono); font-size:10.5px; letter-spacing:.08em;
+  color:var(--ink-soft); background:transparent; border:1px solid var(--rule);
+  border-radius:2px; padding:2px 7px; cursor:pointer}
+.ev-head .expand:hover{color:var(--accent); border-color:var(--accent)}
+.ev-more{border-top:1px solid var(--rule-soft); background:var(--surface); max-height:420px; overflow:auto}
+.ev-more pre{margin:0; padding:12px 14px; font-family:var(--f-mono); font-size:12px; line-height:1.6}
+.ev-more .ln{display:inline-block; width:3.6em; color:var(--ink-faint); user-select:none; text-align:right; padding-right:1em}
+.ev-more mark{background:var(--mark-soft); color:var(--ink); display:inline-block; width:100%}
+.ev-more .err{padding:12px 14px; color:var(--mark); font-family:var(--f-mono); font-size:12px}
+/* filters */
+.filters{display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; align-items:center}
+.filters button{font-family:var(--f-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  padding:5px 11px; border:1px solid var(--rule); background:var(--surface); color:var(--ink-soft);
+  border-radius:2px; cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--accent); color:var(--surface); border-color:var(--accent)}
+.filters .lbl{margin-right:2px}
+.finding[hidden]{display:none!important}
+@media print{.sitenav,.filters,.expand{display:none}}
+
+</style>
+</head>
+<body>
+<nav class="sitenav">
+  <a class="home" href="https://cse.jiun.dev/">CS 커리큘럼 감사</a>
+  <span class="crumb">CSE4020</span>
+  <a class="meth" href="https://cse.jiun.dev/method.html">방법</a>
+  <a class="ext" href="https://github.com/jiunbae/CSE4020" target="_blank" rel="noopener">저장소 &#8599;</a>
+</nav>
 <div class="wrap">
 
   <!-- ============ MASTHEAD ============ -->
@@ -165,6 +272,8 @@ footer p + p{margin-top:6px}
       <div class="grade"><b>C+</b><span class="lbl">종합</span></div>
     </div>
   </header>
+  <div class="note" style="margin:0 0 28px"><span class="lbl">오프라인 사본</span><p>이 파일은 저장소에 함께 두는 사본이다. 원본은 <a href="https://cse.jiun.dev/reviews/CSE4020.html">cse.jiun.dev</a>에 있고, 그쪽에서는 인용된 줄의 원본 코드를 그 자리에서 펼쳐 볼 수 있다.</p></div>
+  <div class="summary" role="group" aria-label="소견 요약"><span class="lbl">소견</span><a class="chip s-critical" href="#f01"><b>3</b> 치명적</a><a class="chip s-major" href="#f01"><b>5</b> 중대</a><a class="chip s-minor" href="#f01"><b>7</b> 경미</a><span class="total">합계 15</span></div>
 
   <!-- ============ 총평 ============ -->
   <section>
@@ -197,8 +306,8 @@ footer p + p{margin-top:6px}
     <p class="prose">명세(<code>labs/lab1/Assignment1-MT.pdf</code>)를 뜯어보면 이 과제는 프로그래밍 과제가 아니다. "Python 3.5·NumPy·PyOpenGL·glfw를 설치하고, 인터랙티브 모드에서 버전을 출력해 스크린샷을 찍고(B), 강의 슬라이드 16–27쪽 코드를 입력해 스크린샷을 찍고(C), 빈 파이썬 소스 파일을 만들어…(D)"가 전부다. 제출물은 <code>B.png</code>, <code>C1–C4.png</code>, <code>D1–D4.png</code> 9장과 노트북 하나이며, 저자는 그 9장을 다 만들어 넣었다. <strong>요구는 충족됐다.</strong> 따라서 여기서 "numpy를 안 썼다"고 감점하는 것은 명세를 안 읽은 채점이다.</p>
     <div class="stack-lg">
 
-      <article class="finding" data-sev="minor">
-        <header><span class="tier">경미</span><h3>같은 산출물이 두 디렉터리에 바이트 단위로 중복돼 있다</h3></header>
+      <article class="finding" id="f01" data-sev="minor">
+        <header><span class="tier">경미</span><h3>같은 산출물이 두 디렉터리에 바이트 단위로 중복돼 있다</h3><a class="permalink" href="#f01" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
           <p><code>diff -r assignment1 labs/lab1</code>의 유일한 차이는 <code>labs/lab1/</code> 쪽에만 명세 PDF가 있다는 것뿐이다. 노트북·<code>.py</code>·PNG 9장(약 1.2 MB)이 그대로 두 번 커밋돼 있다. 과제 제출용 사본과 실습 사본을 분리하려던 의도는 읽히지만, 심볼릭 링크도 <code>.gitattributes</code>도 아닌 물리적 복사다.</p>
         </div>
@@ -209,8 +318,8 @@ footer p + p{margin-top:6px}
         </div>
       </article>
 
-      <article class="finding" data-sev="minor">
-        <header><span class="tier">경미</span><h3><code>.py</code> 내보내기가 노트북의 앞부분을 통째로 버렸다</h3></header>
+      <article class="finding" id="f02" data-sev="minor">
+        <header><span class="tier">경미</span><h3><code>.py</code> 내보내기가 노트북의 앞부분을 통째로 버렸다</h3><a class="permalink" href="#f02" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
           <p><code>Assignment1.ipynb</code>는 코드 셀 26개인데 <code>Assignment1.py</code>는 24번째 셀("Loop for Sequence Types")부터 시작한다. 즉 이 과제의 유일한 검증 지점인 <code>import numpy / import OpenGL / import glfw</code>와 버전 출력 셀이 <code>.py</code>에는 없다. 노트북 전체에서 <code>np.</code>가 나오는 셀은 <code>print (np.__version__)</code> 한 곳뿐이다(명세가 그것만 요구했으니 정상이지만, <code>.py</code>만 보는 사람에게는 이 파일이 왜 "Python/numpy 리뷰"인지 알 방법이 없다).</p>
         </div>
@@ -225,53 +334,44 @@ footer p + p{margin-top:6px}
     <p class="prose">단일 파일 158줄(<code>assignment2/main.py</code>)로, 손으로 좌표를 찍은 "HER_ES" 글자 폴리곤 위에 육각형 몸체와 회전하는 날개 3장으로 된 로고를 얹어 "HEROES"를 완성하는 구성이다. 날개 윤곽은 4점 Bézier 두 개를 <code>detail</code>개로 샘플링해 안쪽·바깥쪽을 잇는 띠로 만든다. 카메라는 A/D/W/S로 조작한다. 계층 구조는 <code>drawHOS()</code> 한 곳에 있다: 육각형을 그린 뒤 1.3배 스케일을 걸고, 그 스케일을 물려받은 자식 좌표계에서 날개 3장을 120°씩 돌려 배치한다. <strong>부모→자식 변환 누적은 실제로 맞게 동작한다.</strong> 문제는 그 계층이 딱 거기서 끝난다는 것이다.</p>
     <div class="stack-lg">
 
-      <article class="finding" data-sev="major">
-        <header><span class="tier">중대</span><h3>투영 행렬을 MODELVIEW 스택에 쌓는다 — 이 파일에 <code>glMatrixMode</code>가 한 번도 없다</h3></header>
+      <article class="finding" id="f03" data-sev="major">
+        <header><span class="tier">중대</span><h3>투영 행렬을 MODELVIEW 스택에 쌓는다 — 이 파일에 <code>glMatrixMode</code>가 한 번도 없다</h3><a class="permalink" href="#f03" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
-          <p>고정 파이프라인의 기본 행렬 모드는 <code>GL_MODELVIEW</code>다. <code>assignment2/main.py</code> 전체를 <code>grep</code>해도 <code>glMatrixMode</code>는 0건이므로, <code>gluPerspective</code>가 만든 투영 행렬이 모델뷰 행렬에 곱해지고 <code>GL_PROJECTION</code>은 항등 행렬로 남는다. 최종 클립 좌표는 <code>I · (P·V·M) · v</code>로 같으니 <em>이 과제에서는</em> 화면이 정상으로 보인다. 그러나 모델뷰 행렬은 조명 계산이 일어나는 눈 좌표계를 정의하는 행렬이라, 이 코드에 광원을 하나라도 추가하는 순간 조명이 전부 깨진다. 저자도 이 문제를 나중에 알았다: 같은 레포의 <code>labs/lab17</code>(5월 14일)부터 <code>labs/lab19</code>, <code>lab20</code>, <code>lab22</code>, <code>lab23</code>, <code>lab24</code>, 그리고 <code>assignment3/main.py:50–53</code>까지 모두 <code>glMatrixMode(GL_PROJECTION)</code>/<code>glMatrixMode(GL_MODELVIEW)</code> 분리를 제대로 하고 있다. 즉 4월의 assignment2만 고쳐지지 않은 채 남았다.</p>
+          <p>고정 파이프라인의 기본 행렬 모드는 <code>GL_MODELVIEW</code>다. <code>assignment2/main.py</code> 전체를 <code>grep</code>해도 <code>glMatrixMode</code>는 0건이므로, <code>gluPerspective</code>가 만든 투영 행렬이 모델뷰 행렬에 곱해지고 <code>GL_PROJECTION</code>은 항등 행렬로 남는다. 최종 클립 좌표는 <code>I · (P·V·M) · v</code>로 같으니 <em>이 과제에서는</em> 화면이 정상으로 보인다. 그러나 모델뷰 행렬은 조명 계산이 일어나는 눈 좌표계를 정의하는 행렬이라, 이 코드에 광원을 하나라도 추가하는 순간 조명이 전부 깨진다. 저자도 이 문제를 나중에 알았다: 같은 레포의 <code>labs/lab17</code>(5월 14일)부터 <code>labs/lab19</code>, <code>lab20</code>, <code>lab22</code>, <code>lab23</code>, <code>lab24</code>, 그리고 <code>assignment3/main.py:50–53</code>까지 모두 <code>glMatrixMode(GL_PROJECTION)</code>/<code>glMatrixMode(GL_MODELVIEW)</code> 분리를 제대로 한다. 즉 4월의 assignment2만 고쳐지지 않은 채 남았다.</p>
         </div>
-        <div class="ev">
-          <div class="ev-head"><b>assignment2/main.py</b><span>:99–106</span></div>
-          <pre>def render():
+        <div class="ev" data-linked="1"><div class="ev-head"><a class="src" href="https://github.com/jiunbae/CSE4020/blob/HEAD/assignment2/main.py#L99-L106" target="_blank" rel="noopener"><b>assignment2/main.py</b></a><span>:99–106</span><button class="expand" type="button" data-repo="CSE4020" data-path="assignment2/main.py" data-start="99" data-end="106">전체 맥락</button></div><pre>def render():
     global gCamAng, gCamHeight
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
     glEnable(GL_DEPTH_TEST)
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
     glLoadIdentity()                 <span class="cm">← 모드는 여전히 GL_MODELVIEW</span>
     <span class="hl">gluPerspective(25, 1, 1, 10)</span>     <span class="cm">← 투영이 모델뷰에 곱해짐</span>
-    gluLookAt(5*np.sin(gCamAng), gCamHeight, 5*np.cos(gCamAng), 0,0,0, 0,1,0)</pre>
-        </div>
+    gluLookAt(5*np.sin(gCamAng), gCamHeight, 5*np.cos(gCamAng), 0,0,0, 0,1,0)</pre></div>
       </article>
 
-      <article class="finding" data-sev="major">
-        <header><span class="tier">중대</span><h3>행렬 스택 네 쌍 중 세 쌍이 아무 일도 하지 않는다 — 계층 깊이가 2단에서 멈춘 이유</h3></header>
+      <article class="finding" id="f04" data-sev="major">
+        <header><span class="tier">중대</span><h3>행렬 스택 네 쌍 중 세 쌍이 아무 일도 하지 않는다 — 계층 깊이가 2단에서 멈춘 이유</h3><a class="permalink" href="#f04" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
           <p>push/pop 짝은 전부 맞다(28↔39, 54↔57, 69↔84, 74↔82, 76↔80). 그러나 실제로 변환을 격리하는 쌍은 <code>drawHOS</code> 안의 76↔80 하나뿐이다. 나머지는 push와 pop 사이에 행렬을 건드리는 호출이 아예 없다. 특히 <code>drawWing</code>의 54↔57은 날개의 두 번째 레이어(<code>z=.1</code>)를 감싸고 있는데, 여기가 바로 3단계 계층이 들어갈 자리다. 스캐폴딩만 세워 놓고 변환은 넣지 않았다는 뜻이고, 결과적으로 이 "Hierarchical Rendering" 과제의 계층은 <em>육각형 → 날개 3장</em> 2단이 전부다.</p>
         </div>
-        <div class="ev">
-          <div class="ev-head"><b>assignment2/main.py</b><span>:54–57</span></div>
-          <pre><span class="hl">glPushMatrix()</span>
+        <div class="ev" data-linked="1"><div class="ev-head"><a class="src" href="https://github.com/jiunbae/CSE4020/blob/HEAD/assignment2/main.py#L54-L57" target="_blank" rel="noopener"><b>assignment2/main.py</b></a><span>:54–57</span><button class="expand" type="button" data-repo="CSE4020" data-path="assignment2/main.py" data-start="54" data-end="57">전체 맥락</button></div><pre><span class="hl">glPushMatrix()</span>
 _draw(np.array([(10, -2), (20, -5), (55, 10), (61, 45)])/100,
         np.array([(10, -2), (25, -10), (60, -5), (76, 30)])/100, .1, detail)
-<span class="hl">glPopMatrix()</span>   <span class="cm">← 사이에 glRotate/glTranslate/glScale 없음. 항등 push/pop.</span></pre>
-        </div>
+<span class="hl">glPopMatrix()</span>   <span class="cm">← 사이에 glRotate/glTranslate/glScale 없음. 항등 push/pop.</span></pre></div>
       </article>
 
-      <article class="finding" data-sev="minor">
-        <header><span class="tier">경미</span><h3>Bernstein 기저의 지수가 뒤집혀 있다 (기하학적으로는 무해)</h3></header>
+      <article class="finding" id="f05" data-sev="minor">
+        <header><span class="tier">경미</span><h3>Bernstein 기저의 지수가 뒤집혀 있다 (기하학적으로는 무해)</h3><a class="permalink" href="#f05" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
           <p>표준 Bernstein 기저는 <code>C(n,i)·t^i·(1-t)^(n-i)</code>인데 코드는 <code>t</code>와 <code>(1-t)</code>의 지수를 맞바꿨다. <code>C(n,i) = C(n,n-i)</code>이므로 이는 제어점 순서를 뒤집은 것과 같고, 기저의 합은 여전히 1이다. 내가 <code>drawWing</code>이 실제로 쓰는 제어점으로 확인한 결과 <code>t=0</code>에서 마지막 제어점 <code>(0.60, 0.50)</code>, <code>t=1</code>에서 첫 제어점 <code>(0.00, 0.00)</code>이 나왔고, <code>t=0.5</code>에서는 표준식과 소수점 아래까지 일치했다. 곡선의 <em>모양</em>은 같고 진행 방향만 반대다. 안쪽·바깥쪽 곡선이 똑같이 뒤집히므로 띠 폴리곤도 깨지지 않는다. 다만 이 코드를 재사용해 <code>t</code>로 애니메이션을 태우거나 곡선 시작점을 특정 좌표에 맞추려는 순간 조용히 틀린다.</p>
         </div>
-        <div class="ev">
-          <div class="ev-head"><b>assignment2/main.py</b><span>:14–16</span></div>
-          <pre>def bpoly(i, n, t):
+        <div class="ev" data-linked="1"><div class="ev-head"><a class="src" href="https://github.com/jiunbae/CSE4020/blob/HEAD/assignment2/main.py#L14-L16" target="_blank" rel="noopener"><b>assignment2/main.py</b></a><span>:14–16</span><button class="expand" type="button" data-repo="CSE4020" data-path="assignment2/main.py" data-start="14" data-end="16">전체 맥락</button></div><pre>def bpoly(i, n, t):
     comb = lambda n, k: factorial(n) / factorial(k) / factorial(n - k)
-    return comb(n, i) * <span class="hl">(t**(n-i)) * (1 - t)**i</span>   <span class="cm">← 표준: t**i * (1-t)**(n-i)</span></pre>
-        </div>
+    return comb(n, i) * <span class="hl">(t**(n-i)) * (1 - t)**i</span>   <span class="cm">← 표준: t**i * (1-t)**(n-i)</span></pre></div>
       </article>
 
-      <article class="finding" data-sev="minor">
-        <header><span class="tier">경미</span><h3>애니메이션이 프레임 카운터에 묶여 있어 기기마다 속도가 다르다</h3></header>
+      <article class="finding" id="f06" data-sev="minor">
+        <header><span class="tier">경미</span><h3>애니메이션이 프레임 카운터에 묶여 있어 기기마다 속도가 다르다</h3><a class="permalink" href="#f06" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
           <p><code>main()</code>의 루프가 매 프레임 <code>counter += 1</code>을 하고(<code>:149</code>), 날개 회전각(<code>:77</code>)과 인트로 줌 스케일(<code>:113–116</code>)이 모두 이 값에서 나온다. <code>glfw.swap_interval</code> 호출이 없어 vsync도 보장되지 않는다. 60 Hz 기기와 144 Hz 기기에서 같은 장면이 2.4배 다른 속도로 재생된다. 참고로 <code>assignment3/main.py:119</code>에서는 <code>glfw.swap_interval(1)</code>을 넣었다 — 여기서도 배운 것이 뒤 과제에만 반영됐다.</p>
         </div>
@@ -290,19 +390,16 @@ _draw(np.array([(10, -2), (20, -5), (55, 10), (61, 45)])/100,
     <p class="prose">명세(<code>assignment3/docs/Assignment3-v3.pdf</code>)는 드래그앤드롭으로 OBJ를 읽어 다중 광원으로 렌더링하는 뷰어를 요구한다. 배점은 카메라 10점, OBJ 로드/렌더 70점, 조명 10점, 보고서 10점이고, 추가 점수는 A(혼합 다각형 메시 +10) / B(<code>glDrawArrays</code> +10) / C(둘 다 +20) 중 하나만 인정된다. 저자는 C를 노렸고, <code>lib/obj.py</code> 146줄 안에 파싱·삼각화·정점 배열 생성을 전부 넣었다. 나는 OpenGL 임포트만 스텁으로 막고 <code>read_obj</code>와 <code>trianglize</code>를 numpy 1.24.4로 직접 호출해 아래 내용을 전부 실측했다.</p>
     <div class="stack-lg">
 
-      <article class="finding" data-sev="critical">
-        <header><span class="tier">치명적</span><h3>정점 법선을 버리고 면당 법선 하나를 쓴다 — 그리고 그렇게 만든 커밋의 이름이 "correct normal"이다</h3></header>
+      <article class="finding" id="f07" data-sev="critical">
+        <header><span class="tier">치명적</span><h3>정점 법선을 버리고 면당 법선 하나를 쓴다 — 그리고 그렇게 만든 커밋의 이름이 "correct normal"이다</h3><a class="permalink" href="#f07" aria-label="이 소견으로 가는 링크">#</a></header>
           <div class="prose">
           <p><code>obj.py:138</code>은 각 면의 <strong>첫 번째 정점</strong>의 법선 인덱스(<code>faces[:, 0, 2]</code>)만 읽는다. <code>obj.py:143</code>은 그 하나를 <code>np.stack((x,x,x))</code>로 세 번 복사해 삼각형의 세 정점에 똑같이 붙인다. 결과적으로 파일이 아무리 부드러운 정점 법선을 담고 있어도 렌더링은 평면 셰이딩이 된다. 명세 B.ii(40점)가 "vertex positions, <em>vertex normals</em>, faces 정보만으로 메시를 표시하라"고 못박은 바로 그 항목이다.</p>
           <p>실측: <code>obj/sphere-tri.obj</code>는 정점 482개에 법선 482개를 가진 매끄러운 구이고, 파일 안의 면 960개 <strong>전부</strong>가 서로 다른 <code>vn</code> 인덱스 3개를 지정한다(<code>f 478//1 21//2 479//3</code>). 그런데 로더가 만든 배열에서는 삼각형 960개 <strong>전부</strong>의 세 법선이 동일하다. 방출된 법선과 구의 참 법선(원점 기준 반지름 방향) 사이 각도는 평균 7.81°, 최대 15.86°였다.</p>
           <p>더 나쁜 것은 git 이력이다. 5월 26일 버전은 면의 각 정점마다 자기 법선을 조회하고 있었다. 6월 11일 커밋 <code>3af4365 "Update lib.obj to correct normal and arange"</code>가 그 코드를 지우고 지금 형태로 바꿨다. 법선을 고쳤다는 커밋이 정확히 법선을 망가뜨린 커밋이다. 대회 마감 이틀 전 리팩터링을 육안 확인 없이 밀어 넣으면 이렇게 된다.</p>
         </div>
-        <div class="ev">
-          <div class="ev-head"><b>assignment3/lib/obj.py</b><span>:138, :143</span></div>
-          <pre>obj.buffer.normal   = npa(obj.values.normal.__getitem__, 0, <span class="hl">obj.faces[:, 0, 2]</span>-1) if obj.values.normal.size else None
+        <div class="ev" data-linked="1"><div class="ev-head"><a class="src" href="https://github.com/jiunbae/CSE4020/blob/HEAD/assignment3/lib/obj.py#L138" target="_blank" rel="noopener"><b>assignment3/lib/obj.py</b></a><span>:138, :143</span><button class="expand" type="button" data-repo="CSE4020" data-path="assignment3/lib/obj.py" data-start="138" data-end="138">전체 맥락</button></div><pre>obj.buffer.normal   = npa(obj.values.normal.__getitem__, 0, <span class="hl">obj.faces[:, 0, 2]</span>-1) if obj.values.normal.size else None
 ...
-ovn = npa(lambda x: <span class="hl">np.stack((x,x,x))</span>, 1, obj.buffer.normal).reshape(w, h)</pre>
-        </div>
+ovn = npa(lambda x: <span class="hl">np.stack((x,x,x))</span>, 1, obj.buffer.normal).reshape(w, h)</pre></div>
         <div class="ev">
           <div class="ev-head"><b>git show 3af4365 — 사라진 정점별 조회</b><span>2018-06-11</span></div>
           <pre><span class="hl">-</span>  obj.buffer.normal[value] = obj.values.normal[<span class="hl">index[2]</span>-1] if obj.values.normal.size else 0
@@ -316,20 +413,17 @@ angle(emitted normal, true radial normal): mean 7.81 deg, max 15.86 deg</pre>
         </div>
       </article>
 
-      <article class="finding" data-sev="critical">
-        <header><span class="tier">치명적</span><h3>오목 다각형 삼각화가 <code>ValueError</code>로 죽는다 — "Trianglize quad or polygons" 체크박스가 거짓이 되는 지점</h3></header>
+      <article class="finding" id="f08" data-sev="critical">
+        <header><span class="tier">치명적</span><h3>오목 다각형 삼각화가 <code>ValueError</code>로 죽는다 — "Trianglize quad or polygons" 체크박스가 거짓이 되는 지점</h3><a class="permalink" href="#f08" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
           <p><code>obj.py:85</code>은 리스트에서 <code>point</code>(튜플)를 지우려던 자리에 <code>p</code>(numpy 배열)를 넘긴다. 바로 윗줄의 조건은 <code>point in vertex</code>인데 삭제 인자만 다르다. <code>list.remove</code>가 ndarray와 튜플을 <code>==</code>로 비교하면서 원소별 불린 배열이 나오고 파이썬이 그 진리값을 판단하지 못해 예외를 던진다.</p>
           <p>이 분기는 볼록 다각형에서는 도달하지 않는다. 볼록 다각형은 모든 꼭짓점이 귀(ear)라서 "귀였던 점이 더 이상 귀가 아니게 되는" <code>elif</code>가 실행될 일이 없기 때문이다. 그래서 레포의 샘플 6개(사각형만 섞인 구·실린더·정육면체)는 전부 통과한다. 반대로 말하면 <strong>삼각화가 실제로 필요한 유일한 경우 — 오목 다각형 — 에서만 죽는다.</strong> XY 평면의 L자 육각형 하나로 재현했다.</p>
         </div>
-        <div class="ev">
-          <div class="ev-head"><b>assignment3/lib/obj.py</b><span>:81–85</span></div>
-          <pre>if _ear(p, q, r, polygon):
+        <div class="ev" data-linked="1"><div class="ev-head"><a class="src" href="https://github.com/jiunbae/CSE4020/blob/HEAD/assignment3/lib/obj.py#L81-L85" target="_blank" rel="noopener"><b>assignment3/lib/obj.py</b></a><span>:81–85</span><button class="expand" type="button" data-repo="CSE4020" data-path="assignment3/lib/obj.py" data-start="81" data-end="85">전체 맥락</button></div><pre>if _ear(p, q, r, polygon):
     if point not in vertex:
         vertex.append(point)
 elif point in vertex:
-    vertex.remove(<span class="hl">p</span>)        <span class="cm">← point 여야 한다. p는 ndarray.</span></pre>
-        </div>
+    vertex.remove(<span class="hl">p</span>)        <span class="cm">← point 여야 한다. p는 ndarray.</span></pre></div>
         <div class="ev">
           <div class="ev-head"><b>재현: L자 육각형 (v 0 0 0 / 2 0 0 / 2 1 0 / 1 1 0 / 1 2 0 / 0 2 0)</b></div>
           <pre>File "lib/obj.py", line 132, in read_obj
@@ -340,8 +434,8 @@ File "lib/obj.py", line 85, in trianglize
         </div>
       </article>
 
-      <article class="finding" data-sev="critical">
-        <header><span class="tier">치명적</span><h3>face 문법을 한 가지만 안다 — 이 레포 안의 <code>labs/lab14/cube.obj</code>조차 로드하지 못한다</h3></header>
+      <article class="finding" id="f09" data-sev="critical">
+        <header><span class="tier">치명적</span><h3>face 문법을 한 가지만 안다 — 이 레포 안의 <code>labs/lab14/cube.obj</code>조차 로드하지 못한다</h3><a class="permalink" href="#f09" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
           <p><code>obj.py:106</code>은 <code>f</code> 줄의 각 토큰을 <code>/</code>로 쪼개 그대로 튜플로 만든다. <code>_type</code>(<code>:92–95</code>)이 빈 문자열을 0으로 바꿔 주므로 <code>f v//vn</code>과 <code>f v/vt/vn</code>은 길이 3의 튜플이 되어 잘 동작한다. 그러나 <code>f v</code>는 길이 1, <code>f v/vt</code>는 길이 2가 되고, <code>:138</code>의 <code>faces[:, 0, 2]</code>가 존재하지 않는 축을 인덱싱한다. OBJ 명세에서 법선이 선택 항목이라는 점을 감안하면 이것은 예외가 아니라 흔한 입력이다.</p>
           <p>결정적으로, <strong>이 레포 자신이 그런 파일을 갖고 있다.</strong> <code>labs/lab14/cube.obj</code>는 <code>f 1 2 3 4</code> 형식의 평범한 큐브다. 그 파일을 자기 뷰어에 드래그앤드롭하면 로더가 예외를 던진다. 드롭 콜백(<code>main.py:97–104</code>)에 <code>try/except</code>가 없으므로 사용자에게는 아무 메시지도 없이 콜백이 터진다.</p>
@@ -361,21 +455,18 @@ OK   obj/sphere-tri-quad.obj           faces=960   array=(5760, 3)
         </div>
       </article>
 
-      <article class="finding" data-sev="major">
-        <header><span class="tier">중대</span><h3>다각형을 2D로 투영할 때 "값이 일정한 축"만 찾는다 — 축에 정렬되지 않은 평면에서 조용히 빈 결과를 낸다</h3></header>
+      <article class="finding" id="f10" data-sev="major">
+        <header><span class="tier">중대</span><h3>다각형을 2D로 투영할 때 "값이 일정한 축"만 찾는다 — 축에 정렬되지 않은 평면에서 조용히 빈 결과를 낸다</h3><a class="permalink" href="#f10" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
           <p>ear clipping은 2D에서만 성립하므로 3D 다각형을 평면에 투영해야 한다. 올바른 방법은 면 법선의 절댓값이 가장 큰 성분에 해당하는 축을 버리는 것이다. 이 코드는 대신 "세 좌표 중 값이 모든 정점에서 동일한 축"을 찾고, 못 찾으면 <code>or [0]</code>로 <strong>무조건 X축을 버린다</strong>(<code>:124–128</code>). 즉 축에 정렬된 평면만 제대로 처리한다.</p>
           <p>다행히 대부분의 기울어진 평면은 YZ 투영으로도 볼록성이 보존되어 살아남는다(기울어진 정오각형으로 확인: 삼각형 3개, 면적 합 2.3776 = 참값 2.3776). 그러나 평면이 X축을 포함하는 경우 — 예를 들어 법선이 <code>(0, 1, 1)</code>인 평면 — YZ 투영은 다각형을 직선으로 뭉갠다. 이때 <code>trianglize</code>는 예외 없이 빈 배열을 돌려주고, 그 면은 <code>newface</code>에 아무것도 남기지 않으며, 몇 줄 뒤 <code>:137</code>이 1차원이 된 배열을 3차원으로 인덱싱하다 죽는다. 침묵 실패가 두 단계 뒤 엉뚱한 줄의 <code>IndexError</code>로 나타나는 최악의 형태다.</p>
           <p>또한 <code>np.where(...)[0] or [0]</code> 자체가 위태롭다. 일정한 축이 두 개 이상이면(퇴화한 선분 면) ndarray의 진리값 판정에서 <code>ValueError</code>가 난다. 마침 축 0이 유일한 일정 축일 때는 <code>array([0])</code>이 falsy라 <code>or</code>가 <code>[0]</code>을 돌려주고 결과적으로 같은 축을 버리게 되어 우연히 맞는다.</p>
         </div>
-        <div class="ev">
-          <div class="ev-head"><b>assignment3/lib/obj.py</b><span>:124–128</span></div>
-          <pre><span class="cm"># vectorize function to detect plane</span>
+        <div class="ev" data-linked="1"><div class="ev-head"><a class="src" href="https://github.com/jiunbae/CSE4020/blob/HEAD/assignment3/lib/obj.py#L124-L128" target="_blank" rel="noopener"><b>assignment3/lib/obj.py</b></a><span>:124–128</span><button class="expand" type="button" data-repo="CSE4020" data-path="assignment3/lib/obj.py" data-start="124" data-end="128">전체 맥락</button></div><pre><span class="cm"># vectorize function to detect plane</span>
 f = np.vectorize(lambda x: not np.any(m[:,x]-m[:,x][0]))
 ...
 p = np.delete(m, (np.where(f(np.arange(3)) == True)[0] <span class="hl">or [0]</span>)[0], 1)
-<span class="cm">                                     ↑ 일정한 축이 없으면 무조건 X를 버림</span></pre>
-        </div>
+<span class="cm">                                     ↑ 일정한 축이 없으면 무조건 X를 버림</span></pre></div>
         <div class="ev">
           <div class="ev-head"><b>재현: 법선 (0, 1, 1) 평면 위의 사각형</b></div>
           <pre>File "lib/obj.py", line 137, in read_obj
@@ -384,15 +475,13 @@ p = np.delete(m, (np.where(f(np.arange(3)) == True)[0] <span class="hl">or [0]</
         </div>
       </article>
 
-      <article class="finding" data-sev="major">
-        <header><span class="tier">중대</span><h3>4개 광원 전부에 정반사 색을 설정하지만 정반사 하이라이트는 나올 수 없다</h3></header>
+      <article class="finding" id="f11" data-sev="major">
+        <header><span class="tier">중대</span><h3>4개 광원 전부에 정반사 색을 설정하지만 정반사 하이라이트는 나올 수 없다</h3><a class="permalink" href="#f11" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
           <p><code>Light._render()</code>는 광원마다 <code>GL_AMBIENT</code>·<code>GL_DIFFUSE</code>·<code>GL_SPECULAR</code>를 모두 설정한다(<code>light.py:39–41</code>). 그런데 재질 쪽은 <code>light.py:56</code> 한 줄이 전부이고, 거기서 설정하는 것은 <code>GL_AMBIENT_AND_DIFFUSE</code>뿐이다. 레포 전체에 <code>GL_SHININESS</code>나 재질 <code>GL_SPECULAR</code>를 설정하는 코드는 없다(<code>grep</code>으로 확인). 고정 파이프라인의 기본 재질 정반사색은 <code>(0,0,0,1)</code>, 기본 shininess는 0이므로 정반사 항은 항상 0이다. 광원 쪽 <code>specular</code> 값 네 벌은 계산에 전혀 기여하지 못한다.</p>
           <p>같은 맥락에서 <code>Light.objectColor()</code>(<code>:43–47</code>)는 <code>ambient</code>·<code>specular</code> 인자를 받아 저장하지만 그 둘은 어디서도 읽히지 않는다. 그리고 <code>glMaterialfv(GL_FRONT, ...)</code>만 호출하므로 후면은 GL 기본 재질로 그려진다 — 컬링을 켜지 않았고 다운로드한 메시가 워터타이트하다는 보장이 없으므로 실제로 보이는 면이다.</p>
         </div>
-        <div class="ev">
-          <div class="ev-head"><b>assignment3/lib/light.py</b><span>:36–41, :56</span></div>
-          <pre>def _render(self):
+        <div class="ev" data-linked="1"><div class="ev-head"><a class="src" href="https://github.com/jiunbae/CSE4020/blob/HEAD/assignment3/lib/light.py#L36-L41" target="_blank" rel="noopener"><b>assignment3/lib/light.py</b></a><span>:36–41, :56</span><button class="expand" type="button" data-repo="CSE4020" data-path="assignment3/lib/light.py" data-start="36" data-end="41">전체 맥락</button></div><pre>def _render(self):
     glEnable(self.index)
     glLightfv(self.index, GL_POSITION, self.pos)
     glLightfv(self.index, GL_AMBIENT,  self.light.ambient)
@@ -400,68 +489,58 @@ p = np.delete(m, (np.where(f(np.arange(3)) == True)[0] <span class="hl">or [0]</
     <span class="hl">glLightfv(self.index, GL_SPECULAR, self.light.specular)</span>
 ...
     glMaterialfv(GL_FRONT, <span class="hl">GL_AMBIENT_AND_DIFFUSE</span>, Light.obj.diffuse)
-    <span class="cm">← 재질 GL_SPECULAR / GL_SHININESS를 설정하는 코드가 레포 어디에도 없음</span></pre>
-        </div>
+    <span class="cm">← 재질 GL_SPECULAR / GL_SHININESS를 설정하는 코드가 레포 어디에도 없음</span></pre></div>
       </article>
 
-      <article class="finding" data-sev="major">
-        <header><span class="tier">중대</span><h3>줌이 카메라가 아니라 물체를 스케일한다 — 명세 위반이자 조명 버그</h3></header>
+      <article class="finding" id="f12" data-sev="major">
+        <header><span class="tier">중대</span><h3>줌이 카메라가 아니라 물체를 스케일한다 — 명세 위반이자 조명 버그</h3><a class="permalink" href="#f12" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
           <p>명세 A.ii는 "카메라를 원점 쪽으로 <em>이동</em>(zoom in) 또는 멀어지게 이동(zoom out)"이라고 적혀 있다. 구현은 <code>gluLookAt</code>의 eye 위치를 고정한 채 물체에 <code>glScalef</code>를 건다. 원근 투영에서 결과가 비슷해 보일 뿐 같은 연산이 아니다 — 클리핑 평면(<code>1</code>~<code>10</code>)과의 관계가 달라지고, 무엇보다 <strong>법선이 함께 스케일된다.</strong></p>
           <p>고정 파이프라인은 법선에 모델뷰 상단 3×3의 역전치를 곱해 주므로 방향 자체는 균등 스케일에서 보존된다. 그러나 길이는 <code>1/s</code>배가 되고, GL은 <code>GL_NORMALIZE</code>나 <code>GL_RESCALE_NORMAL</code>이 켜져 있을 때만 다시 정규화한다. 레포 전체 <code>grep</code> 결과 둘 다 0건이다. 따라서 A/S 키로 줌할 때마다 확산광 세기가 함께 변한다 — 줌아웃하면 모델이 밝아지고 줌인하면 어두워진다. 게다가 <code>cam.zoom</code>에는 하한이 없어(<code>main.py:92–93</code>) S를 열 번 누르면 0, 더 누르면 음수가 되어 모델이 뒤집힌다.</p>
         </div>
-        <div class="ev">
-          <div class="ev-head"><b>assignment3/main.py</b><span>:65–72, :90–93</span></div>
-          <pre>glPushMatrix()
+        <div class="ev" data-linked="1"><div class="ev-head"><a class="src" href="https://github.com/jiunbae/CSE4020/blob/HEAD/assignment3/main.py#L65-L72" target="_blank" rel="noopener"><b>assignment3/main.py</b></a><span>:65–72, :90–93</span><button class="expand" type="button" data-repo="CSE4020" data-path="assignment3/main.py" data-start="65" data-end="72">전체 맥락</button></div><pre>glPushMatrix()
 <span class="cm"># camera zoom</span>
 <span class="hl">glScalef(self.cam.zoom, self.cam.zoom, self.cam.zoom)</span>   <span class="cm">← 카메라가 아니라 물체</span>
 ...
 elif key == glfw.KEY_A:
     self.cam.zoom += .1
 elif key == glfw.KEY_S:
-    <span class="hl">self.cam.zoom -= .1</span>                                 <span class="cm">← 하한 없음: 0 → 음수</span></pre>
-        </div>
+    <span class="hl">self.cam.zoom -= .1</span>                                 <span class="cm">← 하한 없음: 0 → 음수</span></pre></div>
       </article>
 
-      <article class="finding" data-sev="minor">
-        <header><span class="tier">경미</span><h3>유일한 테스트 파일이 존재한 적 없는 속성을 검사한다</h3></header>
+      <article class="finding" id="f13" data-sev="minor">
+        <header><span class="tier">경미</span><h3>유일한 테스트 파일이 존재한 적 없는 속성을 검사한다</h3><a class="permalink" href="#f13" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
           <p><code>tests/test_obj.py</code>는 <code>obj._vertices</code>, <code>obj._normals</code>, <code>obj._texcoords</code>, <code>obj._faces</code>를 단언한다. <code>OBJ</code> 인스턴스의 실제 속성은 <code>filename, array, index, indexes, faces, values, buffer, face_info</code>이고 밑줄 접두 이름은 하나도 없다. 이 테스트는 6월 2일 커밋(<code>60bc26f "Update tests.obj for load object"</code>)에 들어온 뒤 <code>lib/obj.py</code>가 세 번 갈아엎히는 동안 단 한 번도 갱신되지 않았다. 즉 <strong>한 번도 실행되지 않았다.</strong> 그리고 이 테스트가 살아 있었다면 위의 법선 붕괴는 잡혔을 것이다.</p>
         </div>
-        <div class="ev">
-          <div class="ev-head"><b>assignment3/tests/test_obj.py</b><span>:15–20</span></div>
-          <pre>obj = OBJ.read_obj('./obj/cube-tri.obj')
+        <div class="ev" data-linked="1"><div class="ev-head"><a class="src" href="https://github.com/jiunbae/CSE4020/blob/HEAD/assignment3/tests/test_obj.py#L15-L20" target="_blank" rel="noopener"><b>assignment3/tests/test_obj.py</b></a><span>:15–20</span><button class="expand" type="button" data-repo="CSE4020" data-path="assignment3/tests/test_obj.py" data-start="15" data-end="20">전체 맥락</button></div><pre>obj = OBJ.read_obj('./obj/cube-tri.obj')
 
 assert all(isinstance(it, tuple) for it in obj.<span class="hl">_vertices</span>)
 assert all(isinstance(it, tuple) for it in obj.<span class="hl">_normals</span>)
 <span class="cm">실행 결과: obj._vertices -> AttributeError (does not exist)</span>
-<span class="cm">실제 속성: ['filename','array','index','indexes','faces','values','buffer','face_info']</span></pre>
-        </div>
+<span class="cm">실제 속성: ['filename','array','index','indexes','faces','values','buffer','face_info']</span></pre></div>
       </article>
 
-      <article class="finding" data-sev="minor">
-        <header><span class="tier">경미</span><h3>texcoord 버퍼가 정점 인덱스로 채워진다 (두 인덱스가 우연히 같아 드러나지 않음)</h3></header>
+      <article class="finding" id="f14" data-sev="minor">
+        <header><span class="tier">경미</span><h3>texcoord 버퍼가 정점 인덱스로 채워진다 (두 인덱스가 우연히 같아 드러나지 않음)</h3><a class="permalink" href="#f14" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
           <p><code>obj.py:139</code>은 <code>faces[:, 0, 0]</code>, 즉 <em>정점</em> 인덱스 자리를 읽어 텍스처 좌표 배열을 만든다. <code>vt</code> 인덱스는 슬롯 1에 있다. 레포의 <code>Sylvanas.obj</code>·<code>Varianwrynn.obj</code>는 면이 <code>f 1/1/1 2/2/2 3/3/3</code> 형태라 세 인덱스가 항상 같아 잘못된 값이 나오지 않고, <code>render()</code>가 texcoord를 쓰지도 않는다. 명세도 <code>vt</code>를 무시하라고 했으니 실질 피해는 없다. 다만 슬롯 0을 슬롯 1로 착각한 것은 사실이고, 세 줄 연속(<code>:137–139</code>)에서 <code>[:, :, 0]</code>, <code>[:, 0, 2]</code>, <code>[:, 0, 0]</code>이 나열되는 구조 자체가 어느 축이 무엇인지 헷갈리기 딱 좋게 생겼다.</p>
         </div>
       </article>
 
-      <article class="finding" data-sev="minor">
-        <header><span class="tier">경미</span><h3><code>Mode.get(index=0)</code>은 절대 0번을 돌려주지 않는다</h3></header>
+      <article class="finding" id="f15" data-sev="minor">
+        <header><span class="tier">경미</span><h3><code>Mode.get(index=0)</code>은 절대 0번을 돌려주지 않는다</h3><a class="permalink" href="#f15" aria-label="이 소견으로 가는 링크">#</a></header>
         <div class="prose">
           <p><code>mode.py:7</code>의 <code>index = index or self.index</code>는 명시적으로 넘긴 0을 falsy로 보고 버린다. 실측: <code>Mode(['A','B','C'], starts=2).get(index=0)</code>이 <code>'C'</code>를 돌려준다. 현재 호출부 중 <code>index=0</code>을 넘기는 곳이 없어 잠복 버그지만, 이 클래스는 광원 슬롯(<code>GL_LIGHT0</code>~<code>7</code>)과 폴리곤 모드 양쪽에서 재사용되는 공용 유틸이다. 덧붙여 <code>except:</code>로 모든 예외를 삼키고 <code>Exception('index out of range')</code>로 바꿔 던지는 것(<code>:10–11</code>)과, <code>finally</code>에서 실패한 호출도 인덱스를 증가시키는 것도 같은 성질의 문제다.</p>
         </div>
-        <div class="ev">
-          <div class="ev-head"><b>assignment3/lib/mode.py</b><span>:6–15</span></div>
-          <pre>def get(self, index=None, next=False, block=False):
+        <div class="ev" data-linked="1"><div class="ev-head"><a class="src" href="https://github.com/jiunbae/CSE4020/blob/HEAD/assignment3/lib/mode.py#L6-L15" target="_blank" rel="noopener"><b>assignment3/lib/mode.py</b></a><span>:6–15</span><button class="expand" type="button" data-repo="CSE4020" data-path="assignment3/lib/mode.py" data-start="6" data-end="15">전체 맥락</button></div><pre>def get(self, index=None, next=False, block=False):
     <span class="hl">index = index or self.index</span>     <span class="cm">← index=0 이 self.index 로 대체됨</span>
     try:
         return self.modes[index]
     except:
         raise Exception('index out of range')
     finally:
-        self.index+=next</pre>
-        </div>
+        self.index+=next</pre></div>
       </article>
 
     </div>
@@ -505,6 +584,112 @@ assert all(isinstance(it, tuple) for it in obj.<span class="hl">_normals</span>)
   <footer>
     <p>평가 대상: <code>github.com/jiunbae/CSE4020</code> · 추적 파일 74개 · 커밋 62개 · 브랜치 <code>master</code> 하나(다른 브랜치에 숨은 구현 없음) · 작업 기간 2018-03-11 ~ 2018-06-21(2021-08-09 커밋은 GitHub 계정명 변경만).</p>
     <p>검증 방식: <code>assignment1/</code>·<code>assignment2/</code>·<code>assignment3/</code> 전체 소스 정독, <code>labs/</code>는 <code>glMatrixMode</code> 사용 이력 대조 목적으로만 grep. 과제 명세 PDF 2종(<code>Assignment1-MT.pdf</code>, <code>Assignment3-v3.pdf</code>)에서 텍스트를 추출해 README·<code>report.md</code>의 체크박스와 항목별 대조. OpenGL 창이 필요한 코드는 실행하지 않았다. 대신 <code>lib/obj.py</code>의 <code>from OpenGL...</code> 두 줄만 스텁으로 치환하고 Python 3.11 + numpy 1.24.4 환경에서 <code>OBJ.read_obj</code>와 <code>OBJ.trianglize</code>를 직접 호출했다 — 레포의 obj 파일 7종 전부와 합성 케이스 5종(음수 인덱스, <code>f v/vt</code>, 오목 L자 육각형, 기울어진 정오각형, 법선 (0,1,1) 평면 사각형)을 돌려 위의 통과/실패와 스택 트레이스를 얻었다. 법선 붕괴는 <code>sphere-tri.obj</code>의 960개 삼각형에 대해 방출 법선과 참 반지름 법선의 각도 차이를 수치로 측정했다. Bézier 기저와 <code>Mode.get</code>의 falsy 버그도 해당 코드를 그대로 떼어 실행해 확인했다. 조명·행렬 모드 관련 주장은 실행이 아니라 레포 전체 grep(<code>GL_NORMALIZE</code>, <code>GL_RESCALE_NORMAL</code>, <code>glMaterial</code>, <code>GL_SHININESS</code>, <code>glMatrixMode</code> 각 0건 또는 해당 줄)과 고정 파이프라인 규격에 근거한다.</p>
+  
+  <details class="prompt">
+    <summary>이 보고서를 만든 프롬프트</summary>
+    <div class="prompt-body">
+      <p>저장소마다 리뷰어 한 명이 아래 지시로 독립 조사했다. 공통 지침은 <a href="https://cse.jiun.dev/method.html">방법론</a>에 전문이 있다.</p>
+      <pre class="code">그래픽스 과목이므로: 변환 행렬의 정확성(행/열 우선 혼동, 변환 합성 순서, 동차좌표, 법선 변환에 역전치행렬을 썼는지), 계층적 렌더링의 행렬 스택 push/pop 짝, OBJ 파서의 견고함(1-based 인덱스, 음수 인덱스, f v/vt/vn 변형, n각형 삼각화, 법선 없는 파일), 조명/셰이딩 모델이 주장대로 구현되었는지. OpenGL 창이 필요한 코드는 실행하지 말고 정독으로 판단하라.</pre>
+    </div>
+  </details>
   </footer>
 
 </div>
+<script>
+(function(){
+  "use strict";
+  // ---- 1. expandable source from raw.githubusercontent ----
+  document.addEventListener("click", async function(e){
+    var b = e.target.closest(".expand"); if(!b) return;
+    var ev = b.closest(".ev"); var open = ev.querySelector(".ev-more");
+    if(open){ open.remove(); b.textContent="전체 맥락"; return; }
+    b.textContent="불러오는 중…"; b.disabled = true;
+    var repo=b.dataset.repo, path=b.dataset.path,
+        s=parseInt(b.dataset.start,10), t=parseInt(b.dataset.end,10)||s;
+    var box=document.createElement("div"); box.className="ev-more";
+    try{
+      var url="https://raw.githubusercontent.com/jiunbae/"+repo+"/HEAD/"+path
+              .split("/").map(encodeURIComponent).join("/");
+      var res=await fetch(url); if(!res.ok) throw new Error("HTTP "+res.status);
+      var lines=(await res.text()).split("\n");
+      var from=Math.max(1,s-15), to=Math.min(lines.length,t+15);
+      var pre=document.createElement("pre");
+      for(var i=from;i<=to;i++){
+        var row=document.createElement(i>=s&&i<=t?"mark":"span");
+        var n=document.createElement("span"); n.className="ln"; n.textContent=i;
+        row.appendChild(n); row.appendChild(document.createTextNode(lines[i-1]+"\n"));
+        pre.appendChild(row);
+      }
+      box.appendChild(pre);
+    }catch(err){
+      var d=document.createElement("div"); d.className="err";
+      d.textContent="원본을 불러오지 못했습니다 ("+err.message+"). 위 파일명을 눌러 GitHub에서 확인하세요.";
+      box.appendChild(d);
+    }
+    ev.appendChild(box); b.textContent="접기"; b.disabled=false;
+  });
+
+  // ---- 2. severity filter on report pages ----
+  var findings = document.querySelectorAll(".finding[data-sev]");
+  if(findings.length > 2){
+    var counts={critical:0,major:0,minor:0};
+    findings.forEach(function(f){ var k=f.dataset.sev; if(k in counts) counts[k]++; });
+    var host = document.querySelector("section");
+    if(host){
+      var bar=document.createElement("div"); bar.className="filters";
+      bar.innerHTML='<span class="lbl">심각도</span>';
+      [["all","전체",findings.length],["critical","치명적",counts.critical],
+       ["major","중대",counts.major],["minor","경미",counts.minor]].forEach(function(o){
+        if(o[0]!=="all" && !o[2]) return;
+        var btn=document.createElement("button");
+        btn.type="button"; btn.dataset.sev=o[0];
+        btn.setAttribute("aria-pressed", o[0]==="all");
+        btn.textContent=o[1]+" "+o[2];
+        bar.appendChild(btn);
+      });
+      host.parentNode.insertBefore(bar, host);
+      bar.addEventListener("click", function(e){
+        var b=e.target.closest("button"); if(!b) return;
+        bar.querySelectorAll("button").forEach(function(x){
+          x.setAttribute("aria-pressed", x===b); });
+        var want=b.dataset.sev;
+        findings.forEach(function(f){
+          f.hidden = (want!=="all" && f.dataset.sev!==want); });
+      });
+    }
+  }
+
+  // ---- 3. index: grade / year filter ----
+  var rows=document.querySelectorAll(".row");
+  if(rows.length>4 && document.querySelector(".yr")){
+    var grades=[...new Set([...rows].map(function(r){
+      var g=r.querySelector(".rg"); return g?g.textContent.trim():""; }))].filter(Boolean).sort();
+    var sec=document.querySelector(".yr").parentNode;
+    var bar=document.createElement("div"); bar.className="filters";
+    bar.innerHTML='<span class="lbl">등급</span>';
+    [["all","전체"]].concat(grades.map(function(g){return [g,g];})).forEach(function(o){
+      var b=document.createElement("button"); b.type="button"; b.dataset.g=o[0];
+      b.setAttribute("aria-pressed", o[0]==="all"); b.textContent=o[1];
+      bar.appendChild(b);
+    });
+    sec.insertBefore(bar, document.querySelector(".yr"));
+    bar.addEventListener("click", function(e){
+      var b=e.target.closest("button"); if(!b) return;
+      bar.querySelectorAll("button").forEach(function(x){ x.setAttribute("aria-pressed", x===b); });
+      var want=b.dataset.g;
+      rows.forEach(function(r){
+        var g=r.querySelector(".rg"); var m = want==="all" || (g && g.textContent.trim()===want);
+        r.style.display = m ? "" : "none";
+      });
+      document.querySelectorAll(".yr").forEach(function(y){
+        var n=0, el=y.nextElementSibling;
+        while(el && el.classList.contains("row")){ if(el.style.display!=="none") n++; el=el.nextElementSibling; }
+        y.style.display = n ? "" : "none";
+      });
+    });
+  }
+})();
+
+</script>
+</body>
+</html>
