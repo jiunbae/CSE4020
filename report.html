@@ -1,0 +1,510 @@
+<title>CSE4020 컴퓨터그래픽스</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F3F4F1; --surface:#FCFCFA; --surface-2:#EDEFEA;
+  --ink:#1A211C; --ink-soft:#5F6862; --ink-faint:#8A938C;
+  --rule:#DCE0DA; --rule-soft:#E7EAE4;
+  --accent:#2E5B4E; --accent-soft:#DDE9E3;
+  --mark:#A33027; --mark-soft:#F2DFDC;
+  --warn:#8E6416; --warn-soft:#F1E6CE;
+  --good:#41693C; --good-soft:#DFEBDC;
+  --shadow:0 1px 2px rgba(26,33,28,.05), 0 8px 24px -16px rgba(26,33,28,.22);
+  --f-display:"Newsreader",Georgia,"Times New Roman",serif;
+  --f-body:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#121512; --surface:#191D19; --surface-2:#20251F;
+    --ink:#E4E8E1; --ink-soft:#98A199; --ink-faint:#6E776F;
+    --rule:#2A2F29; --rule-soft:#232823;
+    --accent:#78BCA5; --accent-soft:#1D2C27;
+    --mark:#E08A7F; --mark-soft:#2E1F1D;
+    --warn:#CFA155; --warn-soft:#2B2418;
+    --good:#86B87E; --good-soft:#1E2A1D;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#121512; --surface:#191D19; --surface-2:#20251F;
+  --ink:#E4E8E1; --ink-soft:#98A199; --ink-faint:#6E776F;
+  --rule:#2A2F29; --rule-soft:#232823;
+  --accent:#78BCA5; --accent-soft:#1D2C27;
+  --mark:#E08A7F; --mark-soft:#2E1F1D;
+  --warn:#CFA155; --warn-soft:#2B2418;
+  --good:#86B87E; --good-soft:#1E2A1D;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:var(--f-body); font-size:16px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:900px; margin:0 auto; padding-inline:20px; padding-block:0 96px}
+.prose{max-width:70ch}
+h1,h2,h3,h4{font-family:var(--f-display); font-weight:600; text-wrap:balance; margin:0; line-height:1.2}
+p{margin:0}
+a{color:var(--accent); text-underline-offset:3px}
+strong{font-weight:600}
+code{font-family:var(--f-mono); font-size:.86em; background:var(--surface-2); padding:.1em .34em; border-radius:3px; word-break:break-word}
+.lbl{font-family:var(--f-mono); font-size:11px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint)}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:2px solid var(--ink); padding-block:40px 22px; margin-bottom:34px}
+.masthead .code{font-family:var(--f-mono); font-size:13px; font-weight:600; letter-spacing:.2em; color:var(--accent)}
+.masthead h1{font-size:clamp(32px,6vw,50px); margin-top:10px; letter-spacing:-.015em}
+.masthead .sub{font-family:var(--f-display); font-size:clamp(17px,2.6vw,21px); font-style:italic; color:var(--ink-soft); margin-top:12px; max-width:60ch}
+.headrow{display:flex; flex-wrap:wrap; gap:24px; align-items:flex-end; justify-content:space-between; margin-top:26px}
+.stats{display:flex; flex-wrap:wrap; gap:8px 30px}
+.stat .lbl{display:block}
+.stat b{font-family:var(--f-mono); font-size:15px; font-weight:500; font-variant-numeric:tabular-nums; display:block; margin-top:2px}
+.grade{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-width:104px; padding:10px 18px 12px; border:1.5px solid var(--mark); border-radius:2px;
+  color:var(--mark); background:var(--mark-soft); transform:rotate(-1.2deg);
+}
+.grade b{font-family:var(--f-display); font-size:38px; line-height:1; font-weight:600; letter-spacing:-.02em}
+.grade .lbl{color:var(--mark); opacity:.85; margin-top:5px}
+
+/* ---------- sections ---------- */
+section{margin-top:52px}
+section > h2{font-size:clamp(23px,3.6vw,29px); letter-spacing:-.01em; padding-bottom:10px; border-bottom:1px solid var(--rule)}
+section > h2 + p, section > h2 + .prose{margin-top:18px}
+.stack{display:flex; flex-direction:column; gap:16px; margin-top:22px}
+.stack-lg{display:flex; flex-direction:column; gap:26px; margin-top:24px}
+
+/* ---------- findings ---------- */
+.finding{
+  background:var(--surface); border:1px solid var(--rule); border-left:4px solid var(--ink-faint);
+  border-radius:3px; padding:20px 22px; box-shadow:var(--shadow);
+}
+.finding[data-sev="critical"]{border-left-color:var(--mark)}
+.finding[data-sev="major"]{border-left-color:var(--warn)}
+.finding[data-sev="minor"]{border-left-color:var(--ink-faint)}
+.finding > header{display:flex; flex-wrap:wrap; gap:6px 12px; align-items:baseline; margin-bottom:10px}
+.tier{font-family:var(--f-mono); font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; padding:2px 7px; border-radius:2px}
+[data-sev="critical"] .tier{color:var(--mark); background:var(--mark-soft)}
+[data-sev="major"] .tier{color:var(--warn); background:var(--warn-soft)}
+[data-sev="minor"] .tier{color:var(--ink-soft); background:var(--surface-2)}
+.finding h3{font-size:19px; flex:1 1 16ch}
+.finding p + p{margin-top:12px}
+.finding .prose{max-width:none}
+
+/* evidence strip: file:line + verbatim source */
+.ev{margin-top:14px; border:1px solid var(--rule-soft); border-radius:3px; overflow:hidden; background:var(--surface-2)}
+.ev-head{
+  font-family:var(--f-mono); font-size:11.5px; color:var(--ink-soft);
+  padding:6px 12px; border-bottom:1px solid var(--rule-soft); display:flex; gap:10px; flex-wrap:wrap;
+}
+.ev-head b{color:var(--ink); font-weight:600}
+.ev pre{margin:0; padding:12px 14px; overflow-x:auto; font-family:var(--f-mono); font-size:12.5px; line-height:1.6; color:var(--ink)}
+.ev pre .hl{color:var(--mark); font-weight:600}
+.ev pre .cm{color:var(--ink-faint)}
+
+/* standalone code block */
+pre.code{
+  margin:16px 0 0; padding:14px 16px; overflow-x:auto; background:var(--surface-2);
+  border:1px solid var(--rule-soft); border-radius:3px;
+  font-family:var(--f-mono); font-size:12.5px; line-height:1.6;
+}
+
+/* ---------- verdict table ---------- */
+.tbl-wrap{overflow-x:auto; margin-top:22px; border:1px solid var(--rule); border-radius:3px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:14.5px}
+th,td{text-align:left; padding:11px 14px; border-bottom:1px solid var(--rule-soft); vertical-align:top}
+thead th{font-family:var(--f-mono); font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); background:var(--surface-2)}
+tbody tr:last-child td{border-bottom:0}
+td.num{font-family:var(--f-mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+td.g{font-family:var(--f-display); font-size:19px; font-weight:600; white-space:nowrap}
+.g-hi{color:var(--good)} .g-mid{color:var(--warn)} .g-lo{color:var(--mark)}
+
+/* ---------- callouts ---------- */
+.note{border-left:3px solid var(--accent); background:var(--accent-soft); padding:14px 18px; border-radius:0 3px 3px 0}
+.note.good{border-left-color:var(--good); background:var(--good-soft)}
+.note .lbl{color:inherit; opacity:.7; display:block; margin-bottom:6px}
+
+/* ---------- misc ---------- */
+ul,ol{margin:12px 0 0; padding-left:22px}
+li{margin-top:7px}
+li::marker{color:var(--ink-faint)}
+.rank{counter-reset:rk; list-style:none; padding-left:0}
+.rank li{counter-increment:rk; display:flex; gap:14px; margin-top:14px}
+.rank li::before{
+  content:counter(rk); font-family:var(--f-mono); font-size:12px; font-weight:600; color:var(--accent);
+  border:1px solid var(--accent); border-radius:50%; width:24px; height:24px; flex:0 0 24px;
+  display:flex; align-items:center; justify-content:center; margin-top:2px;
+}
+footer{margin-top:64px; padding-top:20px; border-top:1px solid var(--rule); color:var(--ink-faint); font-size:13px}
+footer p + p{margin-top:6px}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+@media (max-width:520px){
+  .grade{transform:none}
+  .masthead{padding-block:30px 18px}
+}
+</style>
+
+<div class="wrap">
+
+  <!-- ============ MASTHEAD ============ -->
+  <header class="masthead">
+    <div class="code">CSE4020 · HANYANG UNIV · 2018 SPRING</div>
+    <h1>컴퓨터그래픽스</h1>
+    <p class="sub">직접 만든 ear-clipping 삼각화기와 인터리브드 정점 배열까지 손댄 야심 찬 OBJ 뷰어. 그러나 "법선을 고쳤다"는 이름의 마지막 커밋이 정점 법선을 면 법선으로 무너뜨렸고, 문서는 그 사실을 모른 채 여전히 정점 법선을 쓴다고 적어 두었다.</p>
+    <div class="headrow">
+      <div class="stats">
+        <div class="stat"><span class="lbl">파일</span><b>74</b></div>
+        <div class="stat"><span class="lbl">커밋</span><b>62</b></div>
+        <div class="stat"><span class="lbl">기간</span><b>2018.03–06</b></div>
+        <div class="stat"><span class="lbl">스택</span><b>Python 3 · PyOpenGL · glfw</b></div>
+      </div>
+      <div class="grade"><b>C+</b><span class="lbl">종합</span></div>
+    </div>
+  </header>
+
+  <!-- ============ 총평 ============ -->
+  <section>
+    <h2>총평</h2>
+    <div class="prose stack">
+      <p>한 학기 분량의 그래픽스 수업 레포다. 과제 셋(Python 환경 설정, 계층적 렌더링, OBJ 뷰어)과 19개 실습 디렉터리로 구성되고, 진짜 평가 대상은 사실상 <code>assignment3/</code> 하나다. 이 저자는 남이 준 뼈대를 그대로 제출하지 않았다. 삼각화 알고리즘을 직접 짰고, <code>glVertex</code> 호출 대신 인터리브드 정점 배열을 만들어 <code>glDrawArrays</code>로 넘겼고, <code>Light</code>/<code>Mode</code>/<code>Window</code>/<code>OBJ</code>라는 나름의 추상화 계층을 세웠다. 과제 명세(<code>assignment3/docs/Assignment3-v3.pdf</code>)의 추가 점수 항목 C(혼합 다각형 메시를 <code>glDrawArrays</code>로, +20점)를 정면으로 노린 구성이고, 레포에 들어 있는 샘플 6개는 실제로 전부 로드된다. 나는 OpenGL 호출만 스텁으로 막고 파서와 삼각화기를 numpy 1.24로 직접 돌려 이를 확인했다.</p>
+
+      <p>문제는 그 다음이다. 이 레포의 모든 추상화는 자기가 광고하는 것보다 정확히 한 칸씩 덜 정확하다. <code>docs/report.md</code>는 삼각화가 "Seidel's algorithm 기반"이라고 적었지만 코드는 교과서적인 ear clipping이다. README는 "vertex position, normals and faces만으로 메시를 표시"한다고 체크했지만 로더는 각 면의 <em>첫 번째 정점</em>의 법선 하나만 읽어 세 정점에 복사한다. 4개 광원 전부에 <code>GL_SPECULAR</code>를 설정해 놓고 재질 쪽 <code>GL_SPECULAR</code>·<code>GL_SHININESS</code>는 한 번도 설정하지 않아 정반사 하이라이트는 물리적으로 0이다. "Trianglize quad or polygons"라고 적었지만 오목 다각형을 넣으면 <code>obj.py:85</code>에서 <code>ValueError</code>로 죽는다. 레포에 실재하는 <code>labs/lab14/cube.obj</code>(<code>f 1 2 3 4</code> 형식)를 이 뷰어에 떨어뜨리면 로더가 예외를 던진다.</p>
+
+      <p>가장 잘한 것 하나: <code>assignment3/lib/obj.py:40–43</code>의 인터리브드 배열 세팅은 산술적으로 정확하다. stride를 <code>6*itemsize</code>로 잡고 법선을 오프셋 0, 정점을 오프셋 <code>3*itemsize</code>에 두고 <code>glDrawArrays</code>의 개수를 <code>array.size/6</code>으로 계산했다. 내가 생성된 배열의 shape(<code>(6·면정점수, 3)</code>)와 대조해 셋이 서로 맞물린다는 것을 확인했다. 학부 과제에서 이 정도 인덱스 산술을 틀리지 않고 맞추는 경우는 흔하지 않다.</p>
+
+      <p>가장 치명적인 것 하나: 마감 이틀 전 커밋 <code>3af4365 "Update lib.obj to correct normal and arange"</code>가 정점별 법선 조회(<code>obj.values.normal[index[2]-1]</code>, 면의 각 정점마다 자기 법선 인덱스를 쓰던 코드)를 면당 하나의 법선으로 교체했다. 법선을 "고쳤다"고 이름 붙인 커밋이 실은 명세 B.ii(40점)의 핵심인 정점 법선을 없앤 커밋이다. 부드러운 구가 각진 구로 렌더링되며, 나는 <code>sphere-tri.obj</code> 960개 면 전부가 파일에서는 서로 다른 <code>vn</code> 인덱스 3개를 갖는데 로더 출력에서는 960개 삼각형 전부가 동일 법선 3개를 내놓는다는 것을 수치로 확인했다.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>과제</th><th>주제</th><th>핵심 판정</th><th>등급</th></tr></thead>
+        <tbody>
+          <tr><td class="num">A1</td><td>Python / numpy 리뷰</td><td>명세가 요구한 것이 스크린샷이라 요구를 다 채웠다. 평가할 엔지니어링은 없고, 결과물이 <code>labs/lab1/</code>에 바이트 단위로 중복돼 있다.</td><td class="g g-mid">B</td></tr>
+          <tr><td class="num">A2</td><td>Hierarchical Rendering</td><td>부모–자식 변환 누적은 실제로 동작하나 깊이 2단에서 멈췄고, push/pop 네 쌍 중 세 쌍이 아무 일도 하지 않는다. 투영 행렬이 MODELVIEW 스택에 들어간다.</td><td class="g g-mid">B-</td></tr>
+          <tr><td class="num">A3</td><td>OBJ 로더 + 렌더러</td><td>야심은 최고, 견고성은 최저. 정점 법선 소실, 오목 다각형 크래시, <code>f v</code>·<code>f v/vt</code>·음수 인덱스 전부 미지원.</td><td class="g g-lo">C+</td></tr>
+          <tr><td class="num">labs</td><td>주차별 실습 19개</td><td>과제가 아니라 수업 따라치기 기록. 평가 대상 아님.</td><td class="g">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ A1 ============ -->
+  <section>
+    <h2>Assignment 1 — Python / numpy 리뷰</h2>
+    <p class="prose">명세(<code>labs/lab1/Assignment1-MT.pdf</code>)를 뜯어보면 이 과제는 프로그래밍 과제가 아니다. "Python 3.5·NumPy·PyOpenGL·glfw를 설치하고, 인터랙티브 모드에서 버전을 출력해 스크린샷을 찍고(B), 강의 슬라이드 16–27쪽 코드를 입력해 스크린샷을 찍고(C), 빈 파이썬 소스 파일을 만들어…(D)"가 전부다. 제출물은 <code>B.png</code>, <code>C1–C4.png</code>, <code>D1–D4.png</code> 9장과 노트북 하나이며, 저자는 그 9장을 다 만들어 넣었다. <strong>요구는 충족됐다.</strong> 따라서 여기서 "numpy를 안 썼다"고 감점하는 것은 명세를 안 읽은 채점이다.</p>
+    <div class="stack-lg">
+
+      <article class="finding" data-sev="minor">
+        <header><span class="tier">경미</span><h3>같은 산출물이 두 디렉터리에 바이트 단위로 중복돼 있다</h3></header>
+        <div class="prose">
+          <p><code>diff -r assignment1 labs/lab1</code>의 유일한 차이는 <code>labs/lab1/</code> 쪽에만 명세 PDF가 있다는 것뿐이다. 노트북·<code>.py</code>·PNG 9장(약 1.2 MB)이 그대로 두 번 커밋돼 있다. 과제 제출용 사본과 실습 사본을 분리하려던 의도는 읽히지만, 심볼릭 링크도 <code>.gitattributes</code>도 아닌 물리적 복사다.</p>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>$ diff -r assignment1 labs/lab1</b></div>
+          <pre>Only in labs/lab1: Assignment1-MT.pdf
+<span class="cm">(그 외 차이 없음 — Assignment1.ipynb, Assignment1.py, B/C1-4/D1-4.png 전부 동일)</span></pre>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="minor">
+        <header><span class="tier">경미</span><h3><code>.py</code> 내보내기가 노트북의 앞부분을 통째로 버렸다</h3></header>
+        <div class="prose">
+          <p><code>Assignment1.ipynb</code>는 코드 셀 26개인데 <code>Assignment1.py</code>는 24번째 셀("Loop for Sequence Types")부터 시작한다. 즉 이 과제의 유일한 검증 지점인 <code>import numpy / import OpenGL / import glfw</code>와 버전 출력 셀이 <code>.py</code>에는 없다. 노트북 전체에서 <code>np.</code>가 나오는 셀은 <code>print (np.__version__)</code> 한 곳뿐이다(명세가 그것만 요구했으니 정상이지만, <code>.py</code>만 보는 사람에게는 이 파일이 왜 "Python/numpy 리뷰"인지 알 방법이 없다).</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ A2 ============ -->
+  <section>
+    <h2>Assignment 2 — Hierarchical Rendering</h2>
+    <p class="prose">단일 파일 158줄(<code>assignment2/main.py</code>)로, 손으로 좌표를 찍은 "HER_ES" 글자 폴리곤 위에 육각형 몸체와 회전하는 날개 3장으로 된 로고를 얹어 "HEROES"를 완성하는 구성이다. 날개 윤곽은 4점 Bézier 두 개를 <code>detail</code>개로 샘플링해 안쪽·바깥쪽을 잇는 띠로 만든다. 카메라는 A/D/W/S로 조작한다. 계층 구조는 <code>drawHOS()</code> 한 곳에 있다: 육각형을 그린 뒤 1.3배 스케일을 걸고, 그 스케일을 물려받은 자식 좌표계에서 날개 3장을 120°씩 돌려 배치한다. <strong>부모→자식 변환 누적은 실제로 맞게 동작한다.</strong> 문제는 그 계층이 딱 거기서 끝난다는 것이다.</p>
+    <div class="stack-lg">
+
+      <article class="finding" data-sev="major">
+        <header><span class="tier">중대</span><h3>투영 행렬을 MODELVIEW 스택에 쌓는다 — 이 파일에 <code>glMatrixMode</code>가 한 번도 없다</h3></header>
+        <div class="prose">
+          <p>고정 파이프라인의 기본 행렬 모드는 <code>GL_MODELVIEW</code>다. <code>assignment2/main.py</code> 전체를 <code>grep</code>해도 <code>glMatrixMode</code>는 0건이므로, <code>gluPerspective</code>가 만든 투영 행렬이 모델뷰 행렬에 곱해지고 <code>GL_PROJECTION</code>은 항등 행렬로 남는다. 최종 클립 좌표는 <code>I · (P·V·M) · v</code>로 같으니 <em>이 과제에서는</em> 화면이 정상으로 보인다. 그러나 모델뷰 행렬은 조명 계산이 일어나는 눈 좌표계를 정의하는 행렬이라, 이 코드에 광원을 하나라도 추가하는 순간 조명이 전부 깨진다. 저자도 이 문제를 나중에 알았다: 같은 레포의 <code>labs/lab17</code>(5월 14일)부터 <code>labs/lab19</code>, <code>lab20</code>, <code>lab22</code>, <code>lab23</code>, <code>lab24</code>, 그리고 <code>assignment3/main.py:50–53</code>까지 모두 <code>glMatrixMode(GL_PROJECTION)</code>/<code>glMatrixMode(GL_MODELVIEW)</code> 분리를 제대로 하고 있다. 즉 4월의 assignment2만 고쳐지지 않은 채 남았다.</p>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>assignment2/main.py</b><span>:99–106</span></div>
+          <pre>def render():
+    global gCamAng, gCamHeight
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+    glEnable(GL_DEPTH_TEST)
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+    glLoadIdentity()                 <span class="cm">← 모드는 여전히 GL_MODELVIEW</span>
+    <span class="hl">gluPerspective(25, 1, 1, 10)</span>     <span class="cm">← 투영이 모델뷰에 곱해짐</span>
+    gluLookAt(5*np.sin(gCamAng), gCamHeight, 5*np.cos(gCamAng), 0,0,0, 0,1,0)</pre>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="major">
+        <header><span class="tier">중대</span><h3>행렬 스택 네 쌍 중 세 쌍이 아무 일도 하지 않는다 — 계층 깊이가 2단에서 멈춘 이유</h3></header>
+        <div class="prose">
+          <p>push/pop 짝은 전부 맞다(28↔39, 54↔57, 69↔84, 74↔82, 76↔80). 그러나 실제로 변환을 격리하는 쌍은 <code>drawHOS</code> 안의 76↔80 하나뿐이다. 나머지는 push와 pop 사이에 행렬을 건드리는 호출이 아예 없다. 특히 <code>drawWing</code>의 54↔57은 날개의 두 번째 레이어(<code>z=.1</code>)를 감싸고 있는데, 여기가 바로 3단계 계층이 들어갈 자리다. 스캐폴딩만 세워 놓고 변환은 넣지 않았다는 뜻이고, 결과적으로 이 "Hierarchical Rendering" 과제의 계층은 <em>육각형 → 날개 3장</em> 2단이 전부다.</p>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>assignment2/main.py</b><span>:54–57</span></div>
+          <pre><span class="hl">glPushMatrix()</span>
+_draw(np.array([(10, -2), (20, -5), (55, 10), (61, 45)])/100,
+        np.array([(10, -2), (25, -10), (60, -5), (76, 30)])/100, .1, detail)
+<span class="hl">glPopMatrix()</span>   <span class="cm">← 사이에 glRotate/glTranslate/glScale 없음. 항등 push/pop.</span></pre>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="minor">
+        <header><span class="tier">경미</span><h3>Bernstein 기저의 지수가 뒤집혀 있다 (기하학적으로는 무해)</h3></header>
+        <div class="prose">
+          <p>표준 Bernstein 기저는 <code>C(n,i)·t^i·(1-t)^(n-i)</code>인데 코드는 <code>t</code>와 <code>(1-t)</code>의 지수를 맞바꿨다. <code>C(n,i) = C(n,n-i)</code>이므로 이는 제어점 순서를 뒤집은 것과 같고, 기저의 합은 여전히 1이다. 내가 <code>drawWing</code>이 실제로 쓰는 제어점으로 확인한 결과 <code>t=0</code>에서 마지막 제어점 <code>(0.60, 0.50)</code>, <code>t=1</code>에서 첫 제어점 <code>(0.00, 0.00)</code>이 나왔고, <code>t=0.5</code>에서는 표준식과 소수점 아래까지 일치했다. 곡선의 <em>모양</em>은 같고 진행 방향만 반대다. 안쪽·바깥쪽 곡선이 똑같이 뒤집히므로 띠 폴리곤도 깨지지 않는다. 다만 이 코드를 재사용해 <code>t</code>로 애니메이션을 태우거나 곡선 시작점을 특정 좌표에 맞추려는 순간 조용히 틀린다.</p>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>assignment2/main.py</b><span>:14–16</span></div>
+          <pre>def bpoly(i, n, t):
+    comb = lambda n, k: factorial(n) / factorial(k) / factorial(n - k)
+    return comb(n, i) * <span class="hl">(t**(n-i)) * (1 - t)**i</span>   <span class="cm">← 표준: t**i * (1-t)**(n-i)</span></pre>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="minor">
+        <header><span class="tier">경미</span><h3>애니메이션이 프레임 카운터에 묶여 있어 기기마다 속도가 다르다</h3></header>
+        <div class="prose">
+          <p><code>main()</code>의 루프가 매 프레임 <code>counter += 1</code>을 하고(<code>:149</code>), 날개 회전각(<code>:77</code>)과 인트로 줌 스케일(<code>:113–116</code>)이 모두 이 값에서 나온다. <code>glfw.swap_interval</code> 호출이 없어 vsync도 보장되지 않는다. 60 Hz 기기와 144 Hz 기기에서 같은 장면이 2.4배 다른 속도로 재생된다. 참고로 <code>assignment3/main.py:119</code>에서는 <code>glfw.swap_interval(1)</code>을 넣었다 — 여기서도 배운 것이 뒤 과제에만 반영됐다.</p>
+        </div>
+      </article>
+
+    </div>
+    <div class="note good" style="margin-top:22px">
+      <span class="lbl">잘한 것</span>
+      <p>글자 목록의 <code>('O', [])</code>(<code>:32</code>)는 실수가 아니라 구성이다. 나머지 글자들은 x=197부터 1109까지 찍혀 있고 <code>R</code>이 x=656에서 끝나 다음 <code>E</code>가 x=804에서 시작하는데, 그 빈칸의 중심은 글자 변환식 <code>(x-620)/1080</code>로 환산하면 약 0.102다. 그리고 로고를 놓는 <code>glTranslatef(.09, -.025, .0)</code>(<code>:111</code>)의 x가 0.09다. 즉 육각형+날개 로고가 "HEROES"의 O 자리를 차지하도록 좌표를 맞춰 둔 것이다. 글자 좌표 100여 개를 손으로 찍어 넣은 노동량도 그렇지만, 렌더 순서(글자 → 이동 → 로고)까지 그 배치에 맞춰 짠 것은 자기 출력물을 실제로 보면서 작업했다는 증거다.</p>
+    </div>
+  </section>
+
+  <!-- ============ A3 ============ -->
+  <section>
+    <h2>Assignment 3 — OBJ 로더 + 렌더러</h2>
+    <p class="prose">명세(<code>assignment3/docs/Assignment3-v3.pdf</code>)는 드래그앤드롭으로 OBJ를 읽어 다중 광원으로 렌더링하는 뷰어를 요구한다. 배점은 카메라 10점, OBJ 로드/렌더 70점, 조명 10점, 보고서 10점이고, 추가 점수는 A(혼합 다각형 메시 +10) / B(<code>glDrawArrays</code> +10) / C(둘 다 +20) 중 하나만 인정된다. 저자는 C를 노렸고, <code>lib/obj.py</code> 146줄 안에 파싱·삼각화·정점 배열 생성을 전부 넣었다. 나는 OpenGL 임포트만 스텁으로 막고 <code>read_obj</code>와 <code>trianglize</code>를 numpy 1.24.4로 직접 호출해 아래 내용을 전부 실측했다.</p>
+    <div class="stack-lg">
+
+      <article class="finding" data-sev="critical">
+        <header><span class="tier">치명적</span><h3>정점 법선을 버리고 면당 법선 하나를 쓴다 — 그리고 그렇게 만든 커밋의 이름이 "correct normal"이다</h3></header>
+          <div class="prose">
+          <p><code>obj.py:138</code>은 각 면의 <strong>첫 번째 정점</strong>의 법선 인덱스(<code>faces[:, 0, 2]</code>)만 읽는다. <code>obj.py:143</code>은 그 하나를 <code>np.stack((x,x,x))</code>로 세 번 복사해 삼각형의 세 정점에 똑같이 붙인다. 결과적으로 파일이 아무리 부드러운 정점 법선을 담고 있어도 렌더링은 평면 셰이딩이 된다. 명세 B.ii(40점)가 "vertex positions, <em>vertex normals</em>, faces 정보만으로 메시를 표시하라"고 못박은 바로 그 항목이다.</p>
+          <p>실측: <code>obj/sphere-tri.obj</code>는 정점 482개에 법선 482개를 가진 매끄러운 구이고, 파일 안의 면 960개 <strong>전부</strong>가 서로 다른 <code>vn</code> 인덱스 3개를 지정한다(<code>f 478//1 21//2 479//3</code>). 그런데 로더가 만든 배열에서는 삼각형 960개 <strong>전부</strong>의 세 법선이 동일하다. 방출된 법선과 구의 참 법선(원점 기준 반지름 방향) 사이 각도는 평균 7.81°, 최대 15.86°였다.</p>
+          <p>더 나쁜 것은 git 이력이다. 5월 26일 버전은 면의 각 정점마다 자기 법선을 조회하고 있었다. 6월 11일 커밋 <code>3af4365 "Update lib.obj to correct normal and arange"</code>가 그 코드를 지우고 지금 형태로 바꿨다. 법선을 고쳤다는 커밋이 정확히 법선을 망가뜨린 커밋이다. 대회 마감 이틀 전 리팩터링을 육안 확인 없이 밀어 넣으면 이렇게 된다.</p>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>assignment3/lib/obj.py</b><span>:138, :143</span></div>
+          <pre>obj.buffer.normal   = npa(obj.values.normal.__getitem__, 0, <span class="hl">obj.faces[:, 0, 2]</span>-1) if obj.values.normal.size else None
+...
+ovn = npa(lambda x: <span class="hl">np.stack((x,x,x))</span>, 1, obj.buffer.normal).reshape(w, h)</pre>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>git show 3af4365 — 사라진 정점별 조회</b><span>2018-06-11</span></div>
+          <pre><span class="hl">-</span>  obj.buffer.normal[value] = obj.values.normal[<span class="hl">index[2]</span>-1] if obj.values.normal.size else 0
+<span class="hl">+</span>  obj.buffer.normal   = npa(obj.values.normal.__getitem__, 0, obj.faces[<span class="hl">:, 0, 2</span>]-1)</pre>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>검증 출력</b><span>numpy 1.24.4, OpenGL 스텁</span></div>
+          <pre>triangles whose 3 emitted normals are identical: 960 / 960
+faces in FILE with 3 DIFFERENT vn indices:          960 / 960
+angle(emitted normal, true radial normal): mean 7.81 deg, max 15.86 deg</pre>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="critical">
+        <header><span class="tier">치명적</span><h3>오목 다각형 삼각화가 <code>ValueError</code>로 죽는다 — "Trianglize quad or polygons" 체크박스가 거짓이 되는 지점</h3></header>
+        <div class="prose">
+          <p><code>obj.py:85</code>은 리스트에서 <code>point</code>(튜플)를 지우려던 자리에 <code>p</code>(numpy 배열)를 넘긴다. 바로 윗줄의 조건은 <code>point in vertex</code>인데 삭제 인자만 다르다. <code>list.remove</code>가 ndarray와 튜플을 <code>==</code>로 비교하면서 원소별 불린 배열이 나오고 파이썬이 그 진리값을 판단하지 못해 예외를 던진다.</p>
+          <p>이 분기는 볼록 다각형에서는 도달하지 않는다. 볼록 다각형은 모든 꼭짓점이 귀(ear)라서 "귀였던 점이 더 이상 귀가 아니게 되는" <code>elif</code>가 실행될 일이 없기 때문이다. 그래서 레포의 샘플 6개(사각형만 섞인 구·실린더·정육면체)는 전부 통과한다. 반대로 말하면 <strong>삼각화가 실제로 필요한 유일한 경우 — 오목 다각형 — 에서만 죽는다.</strong> XY 평면의 L자 육각형 하나로 재현했다.</p>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>assignment3/lib/obj.py</b><span>:81–85</span></div>
+          <pre>if _ear(p, q, r, polygon):
+    if point not in vertex:
+        vertex.append(point)
+elif point in vertex:
+    vertex.remove(<span class="hl">p</span>)        <span class="cm">← point 여야 한다. p는 ndarray.</span></pre>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>재현: L자 육각형 (v 0 0 0 / 2 0 0 / 2 1 0 / 1 1 0 / 1 2 0 / 0 2 0)</b></div>
+          <pre>File "lib/obj.py", line 132, in read_obj
+    for tri in OBJ.trianglize(p)])
+File "lib/obj.py", line 85, in trianglize
+    vertex.remove(p)
+<span class="hl">ValueError: The truth value of an array with more than one element is ambiguous.</span></pre>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="critical">
+        <header><span class="tier">치명적</span><h3>face 문법을 한 가지만 안다 — 이 레포 안의 <code>labs/lab14/cube.obj</code>조차 로드하지 못한다</h3></header>
+        <div class="prose">
+          <p><code>obj.py:106</code>은 <code>f</code> 줄의 각 토큰을 <code>/</code>로 쪼개 그대로 튜플로 만든다. <code>_type</code>(<code>:92–95</code>)이 빈 문자열을 0으로 바꿔 주므로 <code>f v//vn</code>과 <code>f v/vt/vn</code>은 길이 3의 튜플이 되어 잘 동작한다. 그러나 <code>f v</code>는 길이 1, <code>f v/vt</code>는 길이 2가 되고, <code>:138</code>의 <code>faces[:, 0, 2]</code>가 존재하지 않는 축을 인덱싱한다. OBJ 명세에서 법선이 선택 항목이라는 점을 감안하면 이것은 예외가 아니라 흔한 입력이다.</p>
+          <p>결정적으로, <strong>이 레포 자신이 그런 파일을 갖고 있다.</strong> <code>labs/lab14/cube.obj</code>는 <code>f 1 2 3 4</code> 형식의 평범한 큐브다. 그 파일을 자기 뷰어에 드래그앤드롭하면 로더가 예외를 던진다. 드롭 콜백(<code>main.py:97–104</code>)에 <code>try/except</code>가 없으므로 사용자에게는 아무 메시지도 없이 콜백이 터진다.</p>
+          <p>음수(상대) 인덱스도 마찬가지다. OBJ 명세가 허용하는 <code>f -3//-1 -2//-1 -1//-1</code>을 넣으면 <code>:137</code>의 무조건적인 <code>-1</code> 보정이 <code>-3</code>을 <code>-4</code>로 만들어 <code>IndexError</code>가 난다.</p>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>실측 — 레포 내 모든 obj 파일 + 합성 케이스</b><span>numpy 1.24.4</span></div>
+          <pre>OK   obj/cube-tri.obj                  faces=12    array=(72, 3)
+OK   obj/cube-tri-quad.obj             faces=12    array=(72, 3)
+OK   obj/cylinder-tri.obj              faces=124   array=(744, 3)
+OK   obj/cylinder-tri-quad-n.obj       faces=124   array=(744, 3)
+OK   obj/sphere-tri.obj                faces=960   array=(5760, 3)
+OK   obj/sphere-tri-quad.obj           faces=960   array=(5760, 3)
+<span class="hl">FAIL labs/lab14/cube.obj  (f v, 사각형, 법선 없음)   AxisError: axis 1 is out of bounds for array of dimension 0</span>
+<span class="hl">FAIL f 1/1 2/2 3/3       (f v/vt)                   AxisError: axis 1 is out of bounds for array of dimension 0</span>
+<span class="hl">FAIL f -3//-1 -2//-1 -1//-1 (음수 상대 인덱스)        IndexError: index -4 is out of bounds for axis 0 with size 3</span></pre>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="major">
+        <header><span class="tier">중대</span><h3>다각형을 2D로 투영할 때 "값이 일정한 축"만 찾는다 — 축에 정렬되지 않은 평면에서 조용히 빈 결과를 낸다</h3></header>
+        <div class="prose">
+          <p>ear clipping은 2D에서만 성립하므로 3D 다각형을 평면에 투영해야 한다. 올바른 방법은 면 법선의 절댓값이 가장 큰 성분에 해당하는 축을 버리는 것이다. 이 코드는 대신 "세 좌표 중 값이 모든 정점에서 동일한 축"을 찾고, 못 찾으면 <code>or [0]</code>로 <strong>무조건 X축을 버린다</strong>(<code>:124–128</code>). 즉 축에 정렬된 평면만 제대로 처리한다.</p>
+          <p>다행히 대부분의 기울어진 평면은 YZ 투영으로도 볼록성이 보존되어 살아남는다(기울어진 정오각형으로 확인: 삼각형 3개, 면적 합 2.3776 = 참값 2.3776). 그러나 평면이 X축을 포함하는 경우 — 예를 들어 법선이 <code>(0, 1, 1)</code>인 평면 — YZ 투영은 다각형을 직선으로 뭉갠다. 이때 <code>trianglize</code>는 예외 없이 빈 배열을 돌려주고, 그 면은 <code>newface</code>에 아무것도 남기지 않으며, 몇 줄 뒤 <code>:137</code>이 1차원이 된 배열을 3차원으로 인덱싱하다 죽는다. 침묵 실패가 두 단계 뒤 엉뚱한 줄의 <code>IndexError</code>로 나타나는 최악의 형태다.</p>
+          <p>또한 <code>np.where(...)[0] or [0]</code> 자체가 위태롭다. 일정한 축이 두 개 이상이면(퇴화한 선분 면) ndarray의 진리값 판정에서 <code>ValueError</code>가 난다. 마침 축 0이 유일한 일정 축일 때는 <code>array([0])</code>이 falsy라 <code>or</code>가 <code>[0]</code>을 돌려주고 결과적으로 같은 축을 버리게 되어 우연히 맞는다.</p>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>assignment3/lib/obj.py</b><span>:124–128</span></div>
+          <pre><span class="cm"># vectorize function to detect plane</span>
+f = np.vectorize(lambda x: not np.any(m[:,x]-m[:,x][0]))
+...
+p = np.delete(m, (np.where(f(np.arange(3)) == True)[0] <span class="hl">or [0]</span>)[0], 1)
+<span class="cm">                                     ↑ 일정한 축이 없으면 무조건 X를 버림</span></pre>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>재현: 법선 (0, 1, 1) 평면 위의 사각형</b></div>
+          <pre>File "lib/obj.py", line 137, in read_obj
+    obj.buffer.vertex = npa(..., obj.faces[:, :, 0].flatten()-1) ...
+<span class="hl">IndexError: too many indices for array: array is 1-dimensional, but 3 were indexed</span></pre>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="major">
+        <header><span class="tier">중대</span><h3>4개 광원 전부에 정반사 색을 설정하지만 정반사 하이라이트는 나올 수 없다</h3></header>
+        <div class="prose">
+          <p><code>Light._render()</code>는 광원마다 <code>GL_AMBIENT</code>·<code>GL_DIFFUSE</code>·<code>GL_SPECULAR</code>를 모두 설정한다(<code>light.py:39–41</code>). 그런데 재질 쪽은 <code>light.py:56</code> 한 줄이 전부이고, 거기서 설정하는 것은 <code>GL_AMBIENT_AND_DIFFUSE</code>뿐이다. 레포 전체에 <code>GL_SHININESS</code>나 재질 <code>GL_SPECULAR</code>를 설정하는 코드는 없다(<code>grep</code>으로 확인). 고정 파이프라인의 기본 재질 정반사색은 <code>(0,0,0,1)</code>, 기본 shininess는 0이므로 정반사 항은 항상 0이다. 광원 쪽 <code>specular</code> 값 네 벌은 계산에 전혀 기여하지 못한다.</p>
+          <p>같은 맥락에서 <code>Light.objectColor()</code>(<code>:43–47</code>)는 <code>ambient</code>·<code>specular</code> 인자를 받아 저장하지만 그 둘은 어디서도 읽히지 않는다. 그리고 <code>glMaterialfv(GL_FRONT, ...)</code>만 호출하므로 후면은 GL 기본 재질로 그려진다 — 컬링을 켜지 않았고 다운로드한 메시가 워터타이트하다는 보장이 없으므로 실제로 보이는 면이다.</p>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>assignment3/lib/light.py</b><span>:36–41, :56</span></div>
+          <pre>def _render(self):
+    glEnable(self.index)
+    glLightfv(self.index, GL_POSITION, self.pos)
+    glLightfv(self.index, GL_AMBIENT,  self.light.ambient)
+    glLightfv(self.index, GL_DIFFUSE,  self.light.diffuse)
+    <span class="hl">glLightfv(self.index, GL_SPECULAR, self.light.specular)</span>
+...
+    glMaterialfv(GL_FRONT, <span class="hl">GL_AMBIENT_AND_DIFFUSE</span>, Light.obj.diffuse)
+    <span class="cm">← 재질 GL_SPECULAR / GL_SHININESS를 설정하는 코드가 레포 어디에도 없음</span></pre>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="major">
+        <header><span class="tier">중대</span><h3>줌이 카메라가 아니라 물체를 스케일한다 — 명세 위반이자 조명 버그</h3></header>
+        <div class="prose">
+          <p>명세 A.ii는 "카메라를 원점 쪽으로 <em>이동</em>(zoom in) 또는 멀어지게 이동(zoom out)"이라고 적혀 있다. 구현은 <code>gluLookAt</code>의 eye 위치를 고정한 채 물체에 <code>glScalef</code>를 건다. 원근 투영에서 결과가 비슷해 보일 뿐 같은 연산이 아니다 — 클리핑 평면(<code>1</code>~<code>10</code>)과의 관계가 달라지고, 무엇보다 <strong>법선이 함께 스케일된다.</strong></p>
+          <p>고정 파이프라인은 법선에 모델뷰 상단 3×3의 역전치를 곱해 주므로 방향 자체는 균등 스케일에서 보존된다. 그러나 길이는 <code>1/s</code>배가 되고, GL은 <code>GL_NORMALIZE</code>나 <code>GL_RESCALE_NORMAL</code>이 켜져 있을 때만 다시 정규화한다. 레포 전체 <code>grep</code> 결과 둘 다 0건이다. 따라서 A/S 키로 줌할 때마다 확산광 세기가 함께 변한다 — 줌아웃하면 모델이 밝아지고 줌인하면 어두워진다. 게다가 <code>cam.zoom</code>에는 하한이 없어(<code>main.py:92–93</code>) S를 열 번 누르면 0, 더 누르면 음수가 되어 모델이 뒤집힌다.</p>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>assignment3/main.py</b><span>:65–72, :90–93</span></div>
+          <pre>glPushMatrix()
+<span class="cm"># camera zoom</span>
+<span class="hl">glScalef(self.cam.zoom, self.cam.zoom, self.cam.zoom)</span>   <span class="cm">← 카메라가 아니라 물체</span>
+...
+elif key == glfw.KEY_A:
+    self.cam.zoom += .1
+elif key == glfw.KEY_S:
+    <span class="hl">self.cam.zoom -= .1</span>                                 <span class="cm">← 하한 없음: 0 → 음수</span></pre>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="minor">
+        <header><span class="tier">경미</span><h3>유일한 테스트 파일이 존재한 적 없는 속성을 검사한다</h3></header>
+        <div class="prose">
+          <p><code>tests/test_obj.py</code>는 <code>obj._vertices</code>, <code>obj._normals</code>, <code>obj._texcoords</code>, <code>obj._faces</code>를 단언한다. <code>OBJ</code> 인스턴스의 실제 속성은 <code>filename, array, index, indexes, faces, values, buffer, face_info</code>이고 밑줄 접두 이름은 하나도 없다. 이 테스트는 6월 2일 커밋(<code>60bc26f "Update tests.obj for load object"</code>)에 들어온 뒤 <code>lib/obj.py</code>가 세 번 갈아엎히는 동안 단 한 번도 갱신되지 않았다. 즉 <strong>한 번도 실행되지 않았다.</strong> 그리고 이 테스트가 살아 있었다면 위의 법선 붕괴는 잡혔을 것이다.</p>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>assignment3/tests/test_obj.py</b><span>:15–20</span></div>
+          <pre>obj = OBJ.read_obj('./obj/cube-tri.obj')
+
+assert all(isinstance(it, tuple) for it in obj.<span class="hl">_vertices</span>)
+assert all(isinstance(it, tuple) for it in obj.<span class="hl">_normals</span>)
+<span class="cm">실행 결과: obj._vertices -> AttributeError (does not exist)</span>
+<span class="cm">실제 속성: ['filename','array','index','indexes','faces','values','buffer','face_info']</span></pre>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="minor">
+        <header><span class="tier">경미</span><h3>texcoord 버퍼가 정점 인덱스로 채워진다 (두 인덱스가 우연히 같아 드러나지 않음)</h3></header>
+        <div class="prose">
+          <p><code>obj.py:139</code>은 <code>faces[:, 0, 0]</code>, 즉 <em>정점</em> 인덱스 자리를 읽어 텍스처 좌표 배열을 만든다. <code>vt</code> 인덱스는 슬롯 1에 있다. 레포의 <code>Sylvanas.obj</code>·<code>Varianwrynn.obj</code>는 면이 <code>f 1/1/1 2/2/2 3/3/3</code> 형태라 세 인덱스가 항상 같아 잘못된 값이 나오지 않고, <code>render()</code>가 texcoord를 쓰지도 않는다. 명세도 <code>vt</code>를 무시하라고 했으니 실질 피해는 없다. 다만 슬롯 0을 슬롯 1로 착각한 것은 사실이고, 세 줄 연속(<code>:137–139</code>)에서 <code>[:, :, 0]</code>, <code>[:, 0, 2]</code>, <code>[:, 0, 0]</code>이 나열되는 구조 자체가 어느 축이 무엇인지 헷갈리기 딱 좋게 생겼다.</p>
+        </div>
+      </article>
+
+      <article class="finding" data-sev="minor">
+        <header><span class="tier">경미</span><h3><code>Mode.get(index=0)</code>은 절대 0번을 돌려주지 않는다</h3></header>
+        <div class="prose">
+          <p><code>mode.py:7</code>의 <code>index = index or self.index</code>는 명시적으로 넘긴 0을 falsy로 보고 버린다. 실측: <code>Mode(['A','B','C'], starts=2).get(index=0)</code>이 <code>'C'</code>를 돌려준다. 현재 호출부 중 <code>index=0</code>을 넘기는 곳이 없어 잠복 버그지만, 이 클래스는 광원 슬롯(<code>GL_LIGHT0</code>~<code>7</code>)과 폴리곤 모드 양쪽에서 재사용되는 공용 유틸이다. 덧붙여 <code>except:</code>로 모든 예외를 삼키고 <code>Exception('index out of range')</code>로 바꿔 던지는 것(<code>:10–11</code>)과, <code>finally</code>에서 실패한 호출도 인덱스를 증가시키는 것도 같은 성질의 문제다.</p>
+        </div>
+        <div class="ev">
+          <div class="ev-head"><b>assignment3/lib/mode.py</b><span>:6–15</span></div>
+          <pre>def get(self, index=None, next=False, block=False):
+    <span class="hl">index = index or self.index</span>     <span class="cm">← index=0 이 self.index 로 대체됨</span>
+    try:
+        return self.modes[index]
+    except:
+        raise Exception('index out of range')
+    finally:
+        self.index+=next</pre>
+        </div>
+      </article>
+
+    </div>
+    <div class="note good" style="margin-top:22px">
+      <span class="lbl">잘한 것</span>
+      <p>인터리브드 정점 배열 세팅(<code>obj.py:40–43</code>)이 정확하다. <code>[법선3, 정점3]</code> 레이아웃에 대해 stride를 <code>6*itemsize</code>, 법선을 오프셋 0, 정점 포인터를 <code>array.ctypes.data + 3*itemsize</code>, 그리기 개수를 <code>array.size/6</code>으로 잡았다 — 넷이 서로 정합적이고, 내가 실제 생성된 배열 shape과 대조해 확인했다. 명세 추가 점수 B(+10)를 위해 <code>glDrawArrays</code>를 쓰라는 요구를 정직하게 충족한다. 그리고 <code>__str__</code>(<code>:28–34</code>)이 출력하는 다섯 항목(파일명 / 전체 면 수 / 정점 3개 면 / 4개 면 / 5개 이상 면)은 명세 B.iv가 요구한 다섯 항목과 정확히 일치한다 — 명세를 읽고 항목 단위로 맞춘 흔적이다. 성능도 실측했는데, <code>np.append</code>를 줄마다 호출하는 O(n²) 파싱(<code>:97–100</code>)에도 불구하고 34,344면짜리 <code>Mercy.obj</code>가 1.13초, <code>Tracer.obj</code>가 0.37초에 로드됐다. 느리지만 사용 불가능하지는 않다.</p>
+    </div>
+  </section>
+
+  <!-- ============ labs ============ -->
+  <section>
+    <h2>labs/ — 과제가 아니라 수업 기록</h2>
+    <p class="prose">19개 디렉터리에 주차별 실습 코드가 들어 있다. 대부분 강의 슬라이드의 예제를 따라 친 것이고(<code>labs/lab20/20-code.py</code>는 파일 이름부터 배포본이다), 일부는 저자가 확장했다(<code>lab22</code> 406줄, <code>lab19</code> 363줄). 이건 <strong>평가할 과제가 아니라 연습 기록</strong>이므로 등급을 매기지 않는다. 다만 두 가지는 짚어 둘 만하다. 첫째, <code>labs/lab1</code>은 <code>assignment1</code>과 바이트 단위로 같은 파일 11개를 담고 있다. 둘째, 앞서 지적한 <code>glMatrixMode</code> 분리를 저자가 <code>lab17</code>(5월 14일)에 처음 제대로 쓰기 시작했다는 사실은, 4월에 제출한 assignment2의 문제가 무지가 아니라 <em>돌아가서 고치지 않은 것</em>임을 보여준다. 레포 전체에서 과거 과제를 되돌아보며 고친 커밋은 하나도 없다.</p>
+  </section>
+
+  <!-- ============ 반복 패턴 ============ -->
+  <section>
+    <h2>반복되는 패턴</h2>
+    <ol class="rank">
+      <li><div><strong>문서가 코드보다 한 칸 앞서간다.</strong> <code>docs/report.md:64</code>의 "Seidel's algorithm 기반"은 사실이 아니다 — 코드는 <code>_ear</code>/<code>_contain</code>/<code>_inside</code>로 구성된 ear clipping이고, Seidel의 사다리꼴 분할과 공통점이 없다. <code>report.md:29</code>의 "I made a great class for lighting"은 정반사가 물리적으로 나올 수 없는 클래스를 가리킨다. <code>README.md:14</code>의 "normals"는 면 법선이다. 세 주장 모두 코드가 뒷받침하지 않는다.</div></li>
+      <li><div><strong>볼록한 입력만 있는 세계를 가정한다.</strong> ear clipping이 오목 다각형에서 죽고(<code>obj.py:85</code>), 2D 투영이 축 정렬 평면만 제대로 처리하고(<code>:128</code>), <code>_inside</code>가 면적을 부동소수점 <code>==</code>로 비교한다(<code>:58</code>). 셋 다 "레포에 들어 있는 샘플 파일에서는 통과"라는 같은 기준으로 통과했다. 테스트 입력이 곧 명세가 된 사례다.</div></li>
+      <li><div><strong>추상화를 세우고 그 안을 비워 둔다.</strong> assignment2의 항등 <code>glPushMatrix</code>/<code>glPopMatrix</code> 세 쌍, <code>Light.objectColor()</code>의 읽히지 않는 <code>ambient</code>·<code>specular</code> 인자, <code>OBJ.__init__</code>의 사용되지 않는 <code>self.index</code>·<code>self.indexes</code>, 그리고 존재한 적 없는 속성을 검사하는 <code>tests/test_obj.py</code>. 형태는 다 갖췄는데 안이 비어 있다.</div></li>
+      <li><div><strong>마감 직전 리팩터링을 육안 확인 없이 밀어 넣는다.</strong> 6월 10–11일 이틀에 커밋 21개가 몰려 있고, 그 중 <code>47781b6</code>은 <code>main.py</code>를 514줄 바꾸며 326줄을 지웠고 <code>3af4365</code>는 <code>obj.py</code>의 삼각화·법선 경로를 통째로 교체했다. 정점 법선이 사라진 것이 바로 이 시점이다. 저자가 자기 뷰어로 구를 한 번만 다시 띄워 봤다면 각진 실루엣을 놓칠 수 없었다.</div></li>
+      <li><div><strong>배운 것을 앞 과제에 역적용하지 않는다.</strong> <code>glMatrixMode</code> 분리(lab17 이후), <code>glfw.swap_interval(1)</code>(assignment3), 예외 메시지 출력 — 모두 나중 코드에만 있다. 커밋 이력에 이전 과제로 돌아간 흔적이 없다.</div></li>
+    </ol>
+  </section>
+
+  <!-- ============ 권고 ============ -->
+  <section>
+    <h2>지금 손본다면</h2>
+    <ol class="rank">
+      <li><div><strong><code>obj.py:138</code>을 면별이 아닌 정점별 법선으로 되돌린다.</strong> <code>faces[:, 0, 2]</code>를 <code>faces[:, :, 2].flatten()</code>으로 바꾸고 <code>:143</code>의 <code>np.stack((x,x,x))</code> 복제를 없애면 된다. 두 줄이고, 명세 40점 항목의 핵심이 복구되며, 부드러운 메시가 부드럽게 보인다.</div></li>
+      <li><div><strong><code>obj.py:85</code>의 <code>vertex.remove(p)</code>를 <code>vertex.remove(point)</code>로 고친다.</strong> 한 글자. "Trianglize quad or polygons"라는 체크박스를 참으로 만든다.</div></li>
+      <li><div><strong>face 토큰 파싱을 길이 1·2·3 모두 받도록 정규화한다.</strong> <code>obj.py:106</code>에서 쪼갠 리스트를 항상 길이 3으로 패딩하고, 인덱스 보정을 <code>i-1 if i &gt; 0 else len(buffer)+i</code>로 바꾸면 <code>f v</code>, <code>f v/vt</code>, 음수 상대 인덱스가 한꺼번에 해결된다. 그리고 <code>main.py:101</code>의 <code>OBJ.read_obj</code>를 <code>try/except</code>로 감싸 파싱 실패가 뷰어를 죽이지 않게 한다.</div></li>
+      <li><div><strong>2D 투영 축을 면 법선의 최대 성분으로 고른다.</strong> <code>obj.py:124–128</code>의 "값이 일정한 축 찾기"를 <code>np.argmax(np.abs(normal))</code>로 대체한다. 세 줄이 한 줄이 되고, 축에 정렬되지 않은 임의 평면에서도 성립하며, <code>or [0]</code>의 진리값 판정 지뢰도 함께 사라진다.</div></li>
+      <li><div><strong>재질 정반사와 <code>GL_NORMALIZE</code>를 켠다.</strong> <code>light.py:56</code> 옆에 <code>glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, ...)</code>와 <code>glMaterialf(..., GL_SHININESS, ...)</code>를 추가하고, <code>main.py</code>의 초기화에 <code>glEnable(GL_NORMALIZE)</code>를 넣는다. 그러면 광원 네 개에 이미 설정해 둔 <code>specular</code> 값이 실제로 화면에 나타나고, 줌할 때 밝기가 변하는 문제도 사라진다. 줌 자체는 <code>glScalef</code>를 지우고 <code>gluLookAt</code>의 eye 거리를 <code>5/zoom</code>으로 바꾸면 명세 문구대로 카메라 이동이 된다.</div></li>
+      <li><div><strong><code>tests/test_obj.py</code>를 실제 속성으로 다시 쓰거나 지운다.</strong> <code>read_obj</code>가 순수 함수라 OpenGL 없이도 돌아간다는 것은 내가 이미 확인했다 — 스텁 두 줄이면 CI에서 돌릴 수 있다. 위 결함 중 법선 붕괴, 오목 다각형 크래시, <code>f v</code> 미지원 셋은 전부 단위 테스트 세 개로 잡힌다.</div></li>
+    </ol>
+  </section>
+
+  <footer>
+    <p>평가 대상: <code>github.com/jiunbae/CSE4020</code> · 추적 파일 74개 · 커밋 62개 · 브랜치 <code>master</code> 하나(다른 브랜치에 숨은 구현 없음) · 작업 기간 2018-03-11 ~ 2018-06-21(2021-08-09 커밋은 GitHub 계정명 변경만).</p>
+    <p>검증 방식: <code>assignment1/</code>·<code>assignment2/</code>·<code>assignment3/</code> 전체 소스 정독, <code>labs/</code>는 <code>glMatrixMode</code> 사용 이력 대조 목적으로만 grep. 과제 명세 PDF 2종(<code>Assignment1-MT.pdf</code>, <code>Assignment3-v3.pdf</code>)에서 텍스트를 추출해 README·<code>report.md</code>의 체크박스와 항목별 대조. OpenGL 창이 필요한 코드는 실행하지 않았다. 대신 <code>lib/obj.py</code>의 <code>from OpenGL...</code> 두 줄만 스텁으로 치환하고 Python 3.11 + numpy 1.24.4 환경에서 <code>OBJ.read_obj</code>와 <code>OBJ.trianglize</code>를 직접 호출했다 — 레포의 obj 파일 7종 전부와 합성 케이스 5종(음수 인덱스, <code>f v/vt</code>, 오목 L자 육각형, 기울어진 정오각형, 법선 (0,1,1) 평면 사각형)을 돌려 위의 통과/실패와 스택 트레이스를 얻었다. 법선 붕괴는 <code>sphere-tri.obj</code>의 960개 삼각형에 대해 방출 법선과 참 반지름 법선의 각도 차이를 수치로 측정했다. Bézier 기저와 <code>Mode.get</code>의 falsy 버그도 해당 코드를 그대로 떼어 실행해 확인했다. 조명·행렬 모드 관련 주장은 실행이 아니라 레포 전체 grep(<code>GL_NORMALIZE</code>, <code>GL_RESCALE_NORMAL</code>, <code>glMaterial</code>, <code>GL_SHININESS</code>, <code>glMatrixMode</code> 각 0건 또는 해당 줄)과 고정 파이프라인 규격에 근거한다.</p>
+  </footer>
+
+</div>
